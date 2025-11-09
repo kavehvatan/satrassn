@@ -1,0 +1,95 @@
+/* styles/globals.css */
+
+/* Tailwind base layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -------------------- Font: BNazanin -------------------- */
+@font-face {
+  font-family: 'BNazanin';
+  src: url('/fonts/bnazanin/BNazanin.woff2') format('woff2'),
+       url('/fonts/bnazanin/BNazanin.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* -------------------- Base Reset (ساده و بی‌خطر) -------------------- */
+* { box-sizing: border-box; }
+
+html, body {
+  padding: 0;
+  margin: 0;
+  font-family: "BNazanin", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  direction: rtl;
+  background-color: #fff;
+  color: #111;
+}
+
+/* تیترها هم قطعاً از همان فونت استفاده کنند */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "BNazanin", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+/* متن‌های عمومی */
+p, span, li, a, button, input, textarea {
+  font-family: "BNazanin", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* لینک‌ها از رنگ فعلی محیط تبعیت کنند (Tailwind رنگ می‌دهد) */
+a { color: inherit; text-decoration: none; }
+
+/* -------------------- Color Tokens -------------------- */
+:root{
+  --teal:#14b8a6;   /* TEAL */
+  --yellow:#f4c21f; /* YELLOW */
+}
+
+/* -------------------- Buttons (سازگار با کد موجود) -------------------- */
+/* پایه‌ی دکمه */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:.5rem 1rem;            /* px-4 py-2 معادل تقریبی */
+  border-radius:9999px;          /* rounded-full */
+  font-weight:700;               /* font-bold */
+  font-size:.875rem;             /* text-sm */
+  transition: all .2s ease;
+  line-height: 1.2;
+}
+
+/* پرِ زرد: هم .btn-primary هم .btn-filled-yellow */
+.btn-primary,
+.btn-filled-yellow{
+  background: var(--yellow);
+  color: #000;
+  border: 1px solid transparent;
+}
+.btn-primary:hover,
+.btn-filled-yellow:hover{ filter: brightness(0.95); }
+.btn-primary:focus-visible,
+.btn-filled-yellow:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(244,194,31,0.4);
+}
+
+/* دورخط تیل: هم .btn-outline هم .btn-outline-teal */
+.btn-outline,
+.btn-outline-teal{
+  border:1px solid var(--teal);
+  color: var(--teal);
+  background: transparent;
+}
+.btn-outline:hover,
+.btn-outline-teal:hover{
+  background: color-mix(in srgb, var(--teal) 10%, transparent);
+}
+.btn-outline:focus-visible,
+.btn-outline-teal:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(20,184,166,0.35);
+}
