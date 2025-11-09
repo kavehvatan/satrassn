@@ -1,0 +1,42 @@
+{
+  "dell": {
+    "title": "Dell EMC",
+    "intro": "استوریج و سرورهای Dell EMC برای بارکاری‌ سازمانی با تمرکز بر کارایی، سادگی مدیریت و دسترس‌پذیری.",
+    "items": [
+      {
+        "vendor": "Dell EMC",
+        "model": "PowerStore T",
+        "desc": "آرایه‌های All-Flash با معماری NVMe و Scale-Up/Scale-Out؛ مناسب دیتابیس و بارکاری‌ ترکیبی با فشرده‌سازی پیشرفته.",
+        "image": "/products/dell/powerstore.webp",
+        "specsheet": "/specs/dell/powerstore.pdf"
+      },
+      {
+        "vendor": "Dell EMC",
+        "model": "Unity XT",
+        "desc": "میان‌رده محبوب برای فایل/NAS و بلاک/SAN با Snapshot/Replication و Cloud Tiering؛ تعادل قیمت/کارایی عالی.",
+        "image": "/products/dell/unity-xt480.webp",
+        "specsheet": "/specs/dell/xt480.pdf"
+      },
+      {
+        "vendor": "Dell EMC",
+        "model": "PowerEdge R760",
+        "desc": "سرور 2U نسل جدید برای بارکاری‌های مجازی‌سازی، دیتابیس و VDI با پشتیبانی PCIe Gen4 و iDRAC.",
+        "image": "/products/dell/poweredge-r760.webp",
+        "specsheet": "/specs/dell/poweredge-r760.pdf"
+      }
+    ]
+  },
+
+  "hpe":      { "title": "HPE",      "intro": "", "items": [] },
+  "lenovo":   { "title": "Lenovo",   "intro": "", "items": [] },
+  "cisco":    { "title": "Cisco",    "intro": "", "items": [] },
+  "juniper":  { "title": "Juniper",  "intro": "", "items": [] },
+  "oracle":   { "title": "Oracle",   "intro": "", "items": [] },
+  "fujitsu":  { "title": "Fujitsu",  "intro": "", "items": [] },
+  "quantum":  { "title": "Quantum",  "intro": "", "items": [] },
+  "brocade":  { "title": "Brocade",  "intro": "", "items": [] },
+  "hitachi":  { "title": "Hitachi",  "intro": "", "items": [] },
+  "paloalto": { "title": "PaloAlto", "intro": "", "items": [] },
+  "f5":       { "title": "F5",       "intro": "", "items": [] },
+  "fortinet": { "title": "Fortinet", "intro": "", "items": [] }
+}
