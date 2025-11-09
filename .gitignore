@@ -1,4 +1,9 @@
 node_modules
 .next
+<<<<<<< HEAD
 out
 .DS_Store
+=======
+.DS_Store
+out
+>>>>>>> 1c2e4a6 (satrass full site (render-ready + security headers + csrf))

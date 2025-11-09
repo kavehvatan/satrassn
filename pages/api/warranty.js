@@ -1,7 +1,6 @@
 // pages/api/warranty.js
 import fs from "fs/promises";
 import path from "path";
-import { withCsrf } from '@/lib/withCsrf';
 
 const TMP_FILE = "/tmp/warranty.json";
 const DATA_FILE = path.join(process.cwd(), "data", "warranty.json");
@@ -46,7 +45,7 @@ function mergeRows(baseRows, tmpRows) {
   return Array.from(map.values());
 }
 
-async function handler(req, res) {
+export default async function handler(req, res) {
   const dbg = "debug" in req.query;
   const all = "all" in req.query;
   const rawQ = String(req.query.q || "").trim();
@@ -119,4 +118,3 @@ async function handler(req, res) {
   }
   return res.status(200).json(body);
 }
-export default withCsrf(handler);

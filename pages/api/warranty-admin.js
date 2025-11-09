@@ -1,10 +1,9 @@
 // pages/api/warranty-save.js
 import { readStore, writeStore } from "../../lib/dataStore";
-import { withCsrf } from '@/lib/withCsrf';
 
 const norm = (s) => String(s || "").replace(/[\s-]+/g, "").toUpperCase();
 
-async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
   // احراز هویت ادمین
@@ -63,4 +62,3 @@ async function handler(req, res) {
 
   return res.json({ ok: true, count: rows.length, target: targetPath });
 }
-export default withCsrf(handler);

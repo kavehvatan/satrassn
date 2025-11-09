@@ -139,3 +139,5 @@ export default function Header() {
     </header>
   );
 }
+// افزودن لینک ابزار جدید:
+// { title: 'Unity Midrange Sizer', href: '/tools/unity-midrangesizer' }
