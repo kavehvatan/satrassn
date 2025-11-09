@@ -1,3 +1,4 @@
+import withCsrf from '../../lib/withCsrf';
 // pages/api/warranty-save.js
 import { readStore, writeStore } from "../../lib/dataStore";
 
@@ -6,7 +7,7 @@ const normalize = (s) =>
     .toUpperCase()
     .replace(/[^\w]/g, ""); // حذف خط تیره/فاصله/...
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
 
   // توکن ادمین
@@ -41,3 +42,4 @@ export default async function handler(req, res) {
   await writeStore({ rows: merged, updated });
   return res.json({ ok: true, saved: rows.length, total: merged.length, updated });
 }
+export default withCsrf(handler);

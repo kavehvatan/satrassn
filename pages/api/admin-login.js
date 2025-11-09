@@ -1,5 +1,6 @@
+import withCsrf from '../../lib/withCsrf';
 // pages/api/admin-login.js
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "method_not_allowed" });
   }
@@ -26,3 +27,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ ok: false, error: "server_error" });
   }
 }
+export default withCsrf(handler);
