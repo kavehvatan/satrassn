@@ -1,5 +1,6 @@
 // pages/api/warranty-save.js
 import { readStore, writeStore } from "../../lib/dataStore";
+import { validateCsrf } from "../../lib/csrf";
 
 const normalize = (s) =>
   String(s || "")
@@ -8,6 +9,10 @@ const normalize = (s) =>
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
+
+  if (!validateCsrf(req)) {
+    return res.status(403).json({ error: "invalid_csrf" });
+  }
 
   // توکن ادمین
   const sent = (req.headers.authorization || "").replace(/^Bearer\s+/i, "");

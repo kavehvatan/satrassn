@@ -65,6 +65,7 @@ const TOKEN_KEY = "SAT_ADMIN_TOKEN";
 
 export default function WarrantyAdmin() {
   const [token, setToken] = useState("");
+  const [csrfToken, setCsrfToken] = useState("");
   const [tokenInput, setTokenInput] = useState("");
   const [notice, setNotice] = useState(null);
 
@@ -85,6 +86,18 @@ export default function WarrantyAdmin() {
   }, [vendor, model]);
 
   // بارگذاری توکن
+  useEffect(() => {
+    // fetch CSRF token on mount
+    fetch("/api/csrf-token", { method: "GET", credentials: "same-origin" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.csrfToken) setCsrfToken(data.csrfToken);
+      })
+      .catch(() => {
+        setCsrfToken("");
+      });
+  }, []);
+
   useEffect(() => {
     const t = localStorage.getItem(TOKEN_KEY) || "";
     if (t) setToken(t);
@@ -172,6 +185,7 @@ export default function WarrantyAdmin() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+          "x-csrf-token": csrfToken,
         },
         body: JSON.stringify({ rows: pendingRows }),
       });

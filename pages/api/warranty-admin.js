@@ -1,10 +1,15 @@
 // pages/api/warranty-save.js
 import { readStore, writeStore } from "../../lib/dataStore";
+import { validateCsrf } from "../../lib/csrf";
 
 const norm = (s) => String(s || "").replace(/[\s-]+/g, "").toUpperCase();
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
+
+  if (!validateCsrf(req)) {
+    return res.status(403).json({ error: "invalid_csrf" });
+  }
 
   // احراز هویت ادمین
   const token = req.headers["x-admin-token"] || "";
