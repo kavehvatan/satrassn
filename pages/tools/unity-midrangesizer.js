@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const MODELS = [
   "Unity XT 380",
@@ -86,6 +86,33 @@ export default function UnityMidrangeSizerPage() {
   const [error, setError] = useState(null);
   const [results, setResults] = useState({});
 
+  function getRemainingForTier(tierKey, rowsState) {
+    const cap = MODEL_CAPS[model] || 1500;
+    const others = TIERS
+      .map((t) => t.key)
+      .filter((k) => k !== tierKey)
+      .map((k) => (rowsState[k]?.count || 0))
+      .reduce((a, b) => a + b, 0);
+    return Math.max(cap - others, 0);
+  }
+
+  useEffect(() => {
+    setRows((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      TIERS.forEach((tier) => {
+        const key = tier.key;
+        const remaining = getRemainingForTier(key, prev);
+        const current = prev[key]?.count || 0;
+        if (current > remaining) {
+          next[key] = { ...prev[key], count: 0 };
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [model, rows]);
+
   function handleRowChange(tierKey, field, value) {
     setRows((prev) => {
       const next = { ...prev, [tierKey]: { ...prev[tierKey], [field]: value } };
@@ -128,8 +155,11 @@ export default function UnityMidrangeSizerPage() {
       const newResults = {};
       for (const tier of TIERS) {
         const row = rows[tier.key];
-        if (!row.count || row.count <= 0) continue;
-        const out = await calcRow(row);
+        const remaining = getRemainingForTier(tier.key, rows);
+        const effectiveCount =
+          !row.count || row.count <= 0 || row.count > remaining ? 0 : row.count;
+        if (!effectiveCount || effectiveCount <= 0) continue;
+        const out = await calcRow({ ...row, count: effectiveCount });
         newResults[tier.key] = out;
       }
       setResults(newResults);
@@ -181,6 +211,9 @@ export default function UnityMidrangeSizerPage() {
             const raidSets = RAID_SET_OPTIONS[row.raid] || RAID_SET_OPTIONS.RAID5;
             const counts = getCountOptions(model, row.set, row.spare);
             const diskOptions = DISKS_BY_TIER[tier.key] || DISKS_BY_TIER.extreme;
+            const remaining = getRemainingForTier(tier.key, rows);
+            const effectiveCount =
+              !row.count || row.count <= 0 || row.count > remaining ? 0 : row.count;
             return (
               <div key={tier.key} className="mb-4">
                 <div className="font-semibold text-slate-800 mb-2">
@@ -274,7 +307,7 @@ export default function UnityMidrangeSizerPage() {
                     </label>
                     <select
                       className="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
-                      value={row.count}
+                      value={effectiveCount}
                       onChange={(e) =>
                         handleRowChange(
                           tier.key,
@@ -284,7 +317,7 @@ export default function UnityMidrangeSizerPage() {
                       }
                     >
                       {counts.map((c) => (
-                        <option key={c} value={c}>
+                        <option key={c} value={c} disabled={c > remaining}>
                           {c}
                         </option>
                       ))}
