@@ -1,4 +1,3 @@
-import withCsrf from '../../lib/withCsrf';
 // pages/api/admin-check.js
 function parseCookie(header = "") {
   return Object.fromEntries(
@@ -10,7 +9,7 @@ function parseCookie(header = "") {
   );
 }
 
-async function handler(req, res) {
+export default async function handler(req, res) {
   const cookieHeader = req.headers.cookie || "";
   const cookies = parseCookie(cookieHeader);
   const token = cookies["sat_admin"];
@@ -18,4 +17,3 @@ async function handler(req, res) {
   const ok = Boolean(token && process.env.ADMIN_TOKEN && token === process.env.ADMIN_TOKEN);
   return res.status(200).json({ ok });
 }
-export default withCsrf(handler);
