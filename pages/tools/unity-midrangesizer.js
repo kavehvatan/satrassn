@@ -340,44 +340,28 @@ export default function UnityMidrangeSizerPage() {
           </div>
         )}
 
-        {/* Results */}
+        
+{/* Results */}
         {Object.keys(results).length > 0 && (
           <div className="mt-8">
             <h2 className="text-lg font-semibold text-slate-800 mb-3">
               Results
             </h2>
-            <div className="grid gap-4 md:grid-cols-3">
+            <ul className="list-disc list-inside text-sm md:text-base text-slate-800 space-y-1">
               {TIERS.map((tier) => {
                 const r = results[tier.key];
                 if (!r) return null;
                 return (
-                  <div
-                    key={tier.key}
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
-                  >
-                    <div className="font-semibold mb-2 text-slate-800">
-                      {tier.label}
-                    </div>
-                    <ul className="space-y-1 text-slate-700">
-                      <li><b>Disk:</b> {r.disk}</li>
-                      <li><b>RAID:</b> {r.raid}</li>
-                      <li><b>Set:</b> {r.set}</li>
-                      <li><b>Count:</b> {r.count}</li>
-                      <li><b>Spare policy:</b> {r.sparePolicy}</li>
-                      <li><b>Spare disks:</b> {r.spares}</li>
-                      <li><b>Groups:</b> {r.groups}</li>
-                      <li><b>Usable per set (TB):</b> {r.perSetTB}</li>
-                      <li><b>Total usable (TB):</b> {r.usableTB}</li>
-                      <li><b>Source:</b> {r.from}</li>
-                    </ul>
-                  </div>
+                  <li key={tier.key}>
+                    <span className="font-semibold">{tier.label}:</span>{" "}
+                    {r.usableTB.toFixed(2)} TB
+                  </li>
                 );
               })}
-            </div>
-
-            <div className="mt-4 text-sm md:text-base font-semibold text-slate-900">
-              Total usable (all tiers): {totalUsable.toFixed(2)} TB
-            </div>
+            </ul>
+            <p className="mt-3 text-sm md:text-base font-semibold text-slate-900">
+              Total: {totalUsable.toFixed(2)} TB
+            </p>
           </div>
         )}
       </div>
