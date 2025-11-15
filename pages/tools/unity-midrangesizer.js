@@ -5,31 +5,18 @@ const MODELS = [
   "Unity XT 480",
   "Unity XT 680",
   "Unity XT 880",
-  "Unity XT 480F",
-  "Unity XT 680F",
-  "Unity XT 880F",
 ];
 
-// From legacy / pro calculator
-const DISK_OPTIONS = [
-  "400GB",
-  "600GB",
-  "1.2TB",
-  "1.8TB",
-  "3.2TB",
-  "4TB",
-  "8TB",
-  "10TB",
-  "12TB",
-  "14TB",
-  "16TB",
-  "18TB",
-  "20TB",
-];
+// From legacy / pro calculator, split by tier
+const DISKS_BY_TIER = {
+  extreme: ["400GB", "800GB", "1.6TB", "1.92TB", "3.2TB", "3.84TB", "7.68TB", "15.36TB"],
+  performance: ["1.2TB", "1.8TB"],
+  capacity: ["4TB", "6TB", "12TB"],
+};
 
 const RAID_OPTIONS = ["RAID5", "RAID6", "RAID10"];
 
-const SPARE_OPTIONS = ["1/32", "1/30", "2/32", "1/46", "2/46"];
+const SPARE_OPTIONS = ["1/32", "2/32"];
 
 const RAID_SET_OPTIONS = {
   RAID5: ["4+1", "8+1", "12+1"],
@@ -49,10 +36,6 @@ const MODEL_CAPS = {
   "Unity XT 480": 750,
   "Unity XT 680": 1000,
   "Unity XT 880": 1500,
-  // F models follow same caps as their non-F siblings
-  "Unity XT 480F": 750,
-  "Unity XT 680F": 1000,
-  "Unity XT 880F": 1500,
 };
 
 const initialRows = {
@@ -197,6 +180,7 @@ export default function UnityMidrangeSizerPage() {
             const row = rows[tier.key];
             const raidSets = RAID_SET_OPTIONS[row.raid] || RAID_SET_OPTIONS.RAID5;
             const counts = getCountOptions(model, row.set, row.spare);
+            const diskOptions = DISKS_BY_TIER[tier.key] || DISKS_BY_TIER.extreme;
             return (
               <div key={tier.key} className="mb-4">
                 <div className="font-semibold text-slate-800 mb-2">
@@ -215,7 +199,7 @@ export default function UnityMidrangeSizerPage() {
                         handleRowChange(tier.key, "disk", e.target.value)
                       }
                     >
-                      {DISK_OPTIONS.map((d) => (
+                      {diskOptions.map((d) => (
                         <option key={d} value={d}>
                           {d}
                         </option>
