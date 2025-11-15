@@ -10,13 +10,31 @@ const MODELS = [
   "Unity XT 880F",
 ];
 
-const DISK_OPTIONS = ["400GB","600GB","1.2TB","1.8TB","3.2TB","4TB","8TB","10TB","12TB","14TB","16TB","18TB","20TB"];
-const RAID_OPTIONS = ["RAID5","RAID6"];
-const SPARE_OPTIONS = ["1/32","2/32"];
+// From legacy / pro calculator
+const DISK_OPTIONS = [
+  "400GB",
+  "600GB",
+  "1.2TB",
+  "1.8TB",
+  "3.2TB",
+  "4TB",
+  "8TB",
+  "10TB",
+  "12TB",
+  "14TB",
+  "16TB",
+  "18TB",
+  "20TB",
+];
+
+const RAID_OPTIONS = ["RAID5", "RAID6", "RAID10"];
+
+const SPARE_OPTIONS = ["1/32", "1/30", "2/32", "1/46", "2/46"];
 
 const RAID_SET_OPTIONS = {
-  RAID5: ["4+1","8+1","12+1"],
-  RAID6: ["4+2","6+2","8+2","10+2","12+2","14+2"],
+  RAID5: ["4+1", "8+1", "12+1"],
+  RAID6: ["4+2", "6+2", "8+2", "12+2", "14+2"],
+  RAID10: ["1+1", "2+2", "3+3", "4+4"],
 };
 
 const TIERS = [
@@ -25,11 +43,58 @@ const TIERS = [
   { key: "capacity", label: "Capacity" },
 ];
 
-const initialRows = {
-  extreme:  { disk:"400GB", raid:"RAID5", spare:"1/32", set:"4+1", count:0 },
-  performance: { disk:"1.2TB", raid:"RAID5", spare:"1/32", set:"4+1", count:0 },
-  capacity: { disk:"4TB", raid:"RAID5", spare:"1/32", set:"4+1", count:0 },
+// Model capacity in number of drives, based on legacy JS
+const MODEL_CAPS = {
+  "Unity XT 380": 500,
+  "Unity XT 480": 750,
+  "Unity XT 680": 1000,
+  "Unity XT 880": 1500,
+  // F models follow same caps as their non-F siblings
+  "Unity XT 480F": 750,
+  "Unity XT 680F": 1000,
+  "Unity XT 880F": 1500,
 };
+
+const initialRows = {
+  extreme: { disk: "400GB", raid: "RAID5", spare: "1/32", set: "4+1", count: 0 },
+  performance: { disk: "1.2TB", raid: "RAID5", spare: "1/32", set: "4+1", count: 0 },
+  capacity: { disk: "4TB", raid: "RAID5", spare: "1/32", set: "4+1", count: 0 },
+};
+
+function parseSet(setStr) {
+  const [aStr, bStr] = String(setStr || "").split("+");
+  const a = parseInt(aStr || "0", 10);
+  const b = parseInt(bStr || "0", 10);
+  return { a, b, size: a + b };
+}
+
+// per32 from legacy: 1/32 -> 1, 2/32 -> 2, others treated as 1 or 2 depending on numerator
+function per32(sparePolicy) {
+  const val = String(sparePolicy || "").trim();
+  if (val === "2/32") return 2;
+  if (val.startsWith("2/")) return 2;
+  return 1;
+}
+
+// validCounts copied from legacy logic
+function validCounts(maxN, setSize, per) {
+  const out = [0];
+  for (let n = 1; n <= maxN; n += 1) {
+    const sp = Math.max(per, Math.ceil(n / 32) * per);
+    const eff = n - sp;
+    if (eff >= setSize && eff % setSize === 0) {
+      out.push(n);
+    }
+  }
+  return out;
+}
+
+function getCountOptions(model, setStr, sparePolicy) {
+  const cap = MODEL_CAPS[model] || 1500;
+  const { size } = parseSet(setStr);
+  const per = per32(sparePolicy);
+  return validCounts(cap, size, per);
+}
 
 export default function UnityMidrangeSizerPage() {
   const [model, setModel] = useState("Unity XT 480");
@@ -39,9 +104,8 @@ export default function UnityMidrangeSizerPage() {
   const [results, setResults] = useState({});
 
   function handleRowChange(tierKey, field, value) {
-    setRows(prev => {
+    setRows((prev) => {
       const next = { ...prev, [tierKey]: { ...prev[tierKey], [field]: value } };
-      // اگر RAID عوض شد و set فعلی در لیست جدید نیست، اولین گزینه را ست کن
       if (field === "raid") {
         const raid = value;
         const allowedSets = RAID_SET_OPTIONS[raid] || [];
@@ -99,18 +163,18 @@ export default function UnityMidrangeSizerPage() {
   }, 0);
 
   return (
-    <main className="min-h-screen bg-slate-50 py-10">
-      <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-md px-6 py-8">
+    <main dir="ltr" className="min-h-screen bg-slate-50 py-10">
+      <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-md px-6 py-8 text-left">
         <h1 className="text-2xl md:text-3xl font-bold mb-2 text-slate-900">
           Unity XT RAID Calculator
         </h1>
         <p className="text-sm md:text-base text-slate-600 mb-6">
-          این ابزار برای سایزبندی سریع Unity XT / Midrange طراحی شده و خارج از دیتاشیت رسمی است؛
-          لطفاً همیشه نتایج را با مستندات DellEMC و تجربه خودت اعتبارسنجی کن.
+          Quick sizing helper for Unity XT / midrange configurations. Results are approximate and must be
+          validated against Dell EMC documentation and your own design rules.
         </p>
 
-        {/* Model */}
         <form onSubmit={handleSubmit}>
+          {/* Model */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-slate-700 mb-1">
               Model
@@ -131,7 +195,8 @@ export default function UnityMidrangeSizerPage() {
           {/* Tiers */}
           {TIERS.map((tier) => {
             const row = rows[tier.key];
-            const raidSets = RAID_SET_OPTIONS[row.raid] || RAID_SET_OPTIONS["RAID5"];
+            const raidSets = RAID_SET_OPTIONS[row.raid] || RAID_SET_OPTIONS.RAID5;
+            const counts = getCountOptions(model, row.set, row.spare);
             return (
               <div key={tier.key} className="mb-4">
                 <div className="font-semibold text-slate-800 mb-2">
@@ -223,9 +288,7 @@ export default function UnityMidrangeSizerPage() {
                     <label className="text-xs font-medium text-slate-600">
                       Count
                     </label>
-                    <input
-                      type="number"
-                      min={0}
+                    <select
                       className="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
                       value={row.count}
                       onChange={(e) =>
@@ -235,7 +298,13 @@ export default function UnityMidrangeSizerPage() {
                           parseInt(e.target.value || "0", 10)
                         )
                       }
-                    />
+                    >
+                      {counts.map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>
@@ -245,7 +314,7 @@ export default function UnityMidrangeSizerPage() {
           <div className="mt-6 flex gap-3">
             <button
               type="button"
-              className="px-4 py-2 rounded-xl text-sm md:text-base font-semibold bg-amber-400 text-slate-900"
+              className="px-4 py-2 rounded-xl text-sm md:text-base font-semibold bg-slate-200 text-slate-800"
               onClick={() => {
                 setRows(initialRows);
                 setResults({});
@@ -307,8 +376,7 @@ export default function UnityMidrangeSizerPage() {
             </div>
 
             <div className="mt-4 text-sm md:text-base font-semibold text-slate-900">
-              Total usable (all tiers):{" "}
-              {totalUsable.toFixed(2)} TB
+              Total usable (all tiers): {totalUsable.toFixed(2)} TB
             </div>
           </div>
         )}
