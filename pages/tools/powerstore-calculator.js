@@ -150,7 +150,6 @@ function PowerStoreCalculator() {
   const [driveCount, setDriveCount] = useState(() =>
     getDefaultDriveCount("PowerStore 9200T")
   );
-}
   const [dataReduction, setDataReduction] = useState(3); // 3:1 typical
 
   const maxDrivesForModel = APPLIANCES[appliance];
