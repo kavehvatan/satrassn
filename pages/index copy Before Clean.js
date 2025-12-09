@@ -39,18 +39,10 @@ function SectionTitle({ as: Tag = "h2", icon = "equipment", className = "", chil
         {useFallback ? (
           <FallbackIcon className="w-5 h-5" />
         ) : (
-          <img
-            src={src}
-            alt=""
-            className="w-5 h-5"
-            aria-hidden="true"
-            onError={() => setUseFallback(true)}
-          />
+          <img src={src} alt="" className="w-5 h-5" aria-hidden="true" onError={() => setUseFallback(true)} />
         )}
       </span>
-      <Tag className="text-2xl font-extrabold tracking-tight text-slate-900">
-        {children}
-      </Tag>
+      <Tag className="text-2xl font-extrabold tracking-tight text-slate-900">{children}</Tag>
       <span className="flex-1 h-px bg-gradient-to-l from-slate-200 to-transparent" />
     </div>
   );
@@ -118,9 +110,7 @@ function BrandCard({ title, slug, href, index, logo }) {
         <div
           className="absolute inset-0 pointer-events-none opacity-30 transition-opacity duration-300 ease-in-out"
           style={{
-            background: `radial-gradient(140% 120% at -10% -10%, ${colorOf(
-              index
-            )}33 0%, transparent 60%)`,
+            background: `radial-gradient(140% 120% at -10% -10%, ${colorOf(index)}33 0%, transparent 60%)`,
           }}
         />
 
@@ -153,9 +143,7 @@ function ServiceCard({ title, icon, href }) {
   return (
     <Link href={href} className="w-full max-w-[520px]">
       <div
-        onMouseEnter={() =>
-          setBorder(LOGO_COLORS[Math.floor(Math.random() * LOGO_COLORS.length)])
-        }
+        onMouseEnter={() => setBorder(LOGO_COLORS[Math.floor(Math.random() * LOGO_COLORS.length)])}
         onMouseLeave={() => setBorder("#e5e7eb")}
         className="flex flex-col items-center justify-center gap-3 p-5 border rounded-lg hover:shadow-md transition text-center w-full mx-auto h-[120px] cursor-pointer select-none"
         style={{ borderColor: border, background: bg, color: fg }}
@@ -211,6 +199,60 @@ function SolutionCard({ name, slug }) {
   );
 }
 
+/* =============== AnimatedHeadline (دیگه استفاده نمی‌شه ولی نگه داشتیم) =============== */
+function AnimatedHeadline({
+  phrases = ["زیرساخت هوشمند", "دقت مهندسی"],
+  typeSpeed = 140,
+  holdTime = 1700,
+}) {
+  const [idx, setIdx] = useState(0);
+  const [shown, setShown] = useState("");
+  useEffect(() => {
+    let timer;
+    const target = phrases[idx];
+    if (shown.length < target.length) {
+      timer = setTimeout(
+        () => setShown(target.slice(0, shown.length + 1)),
+        typeSpeed
+      );
+    } else {
+      timer = setTimeout(() => {
+        setShown("");
+        setIdx((i) => (i + 1) % phrases.length);
+      }, holdTime);
+    }
+    return () => clearTimeout(timer);
+  }, [shown, idx, phrases, typeSpeed, holdTime]);
+  return (
+    <span className="inline-block">
+      {shown}
+      <span className="inline-block w-[0.6ch] animate-pulse">|</span>
+    </span>
+  );
+}
+
+/* =============== FallingSubtitle =============== */
+function FallingSubtitle({ text, falling }) {
+  const chars = Array.from(text || "");
+
+  return (
+    <p className="mt-4 text-gray-300">
+      <span
+        className={`subtitle-fall-wrapper ${falling ? "is-falling" : ""}`}
+      >
+        {chars.map((ch, i) => (
+          <span
+            key={i}
+            className="subtitle-char"
+            style={{ "--i": i }}
+          >
+            {ch === " " ? "\u00A0" : ch}
+          </span>
+        ))}
+      </span>
+    </p>
+  );
+}
 
 /* =============== Page =============== */
 export default function Home() {
@@ -237,8 +279,9 @@ export default function Home() {
     });
   };
 
-  // --- Fade کل محتوای هیرو هنگام اسکرول
+  // --- Fade کل محتوای هیرو هنگام اسکرول + افتادن زیرتیتر
   const [heroOpacity, setHeroOpacity] = useState(1);
+  const [subtitleFalling, setSubtitleFalling] = useState(false);
 
   useEffect(() => {
     const FADE_END = 340;
@@ -250,6 +293,12 @@ export default function Home() {
         const y = window.scrollY || 0;
         const next = Math.max(0, Math.min(1, 1 - y / FADE_END));
         setHeroOpacity(next);
+
+        // شروع اسکرول → زیرتیتر بریزه پایین
+        if (y > 20) {
+          setSubtitleFalling(true);
+        }
+
         ticking = false;
       });
     };
@@ -280,14 +329,15 @@ export default function Home() {
           }}
         >
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold leading-tight">
+            <h1 className="pressure-text text-3xl md:text-4xl font-extrabold leading-tight">
               <span style={{ color: TEAL }}>زیرساخت هوشمند،</span>{" "}
               <span style={{ color: YELLOW }}>دقت مهندسی</span>
             </h1>
 
-            <p className="mt-4 text-gray-300">
-              از مشاوره تا پشتیبانی، درکنار شما.
-            </p>
+            <FallingSubtitle
+              text="از مشاوره تا پشتیبانی، درکنار شما."
+              falling={subtitleFalling}
+            />
 
             <div className="mt-6 flex gap-3">
               <a
@@ -464,8 +514,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a href="/news" className="hover:text-white">
-                    تازه‌ها{" "}
-                    <span className="text-white/60">(اخبار و مقالات)</span>
+                    تازه‌ها <span className="text-white/60">(اخبار و مقالات)</span>
                   </a>
                 </li>
               </ul>
