@@ -12,14 +12,6 @@ const APPLIANCES = {
   "PowerStore 9200T": 93,
 };
 
-// پیش‌فرض تعداد NVMe برای هر مدل
-function getDefaultDriveCount(appliance) {
-  if (appliance === "PowerStore 500T") {
-    return 25;
-  }
-  return 21; // برای بقیه مدل‌ها
-}
-
 // NVMe-only – SCM removed
 const DRIVES = [
   { id: "nvme-1.92", label: "NVMe TLC 1.92 TB", sizeTiB: 1.7466 },
@@ -147,9 +139,7 @@ function PowerStoreCalculator() {
   const [appliance, setAppliance] = useState("PowerStore 500T");
   const [driveId, setDriveId] = useState("nvme-3.84");
   const [toleranceLevel, setToleranceLevel] = useState("double");
-  const [driveCount, setDriveCount] = useState(() =>
-    getDefaultDriveCount("PowerStore 500T")
-  );
+  const [driveCount, setDriveCount] = useState(24);
   const [dataReduction, setDataReduction] = useState(3); // 3:1 typical
 
   const maxDrivesForModel = APPLIANCES[appliance];
@@ -219,11 +209,7 @@ function PowerStoreCalculator() {
             <select
               className="w-full rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
               value={appliance}
-              onChange={(e) => {
-                const newAppliance = e.target.value;
-                setAppliance(newAppliance);
-                setDriveCount(getDefaultDriveCount(newAppliance));
-              }}
+              onChange={(e) => setAppliance(e.target.value)}
             >
               {Object.keys(APPLIANCES).map((name) => (
                 <option key={name} value={name}>
@@ -358,7 +344,11 @@ function PowerStoreCalculator() {
                   <div className="text-xs text-slate-500 mb-1">
                     Raw capacity (all NVMe)
                   </div>
-                  <div className="text-xl font-semibold" dir="ltr" lang="en">
+                  <div
+                    className="text-xl font-semibold"
+                    dir="ltr"
+                    lang="en"
+                  >
                     {formatTiB(result.rawTotal)}
                   </div>
                 </div>
@@ -366,7 +356,11 @@ function PowerStoreCalculator() {
                   <div className="text-xs text-slate-500 mb-1">
                     Usable after RAID &amp; virtual spares
                   </div>
-                  <div className="text-xl font-semibold" dir="ltr" lang="en">
+                  <div
+                    className="text-xl font-semibold"
+                    dir="ltr"
+                    lang="en"
+                  >
                     {formatTiB(result.usableAfterRAID)}
                   </div>
                 </div>
@@ -375,7 +369,11 @@ function PowerStoreCalculator() {
                     Effective logical capacity (with{" "}
                     {result.drRatio.toFixed(1)}:1 data reduction)
                   </div>
-                  <div className="text-xl font-semibold" dir="ltr" lang="en">
+                  <div
+                    className="text-xl font-semibold"
+                    dir="ltr"
+                    lang="en"
+                  >
                     {formatTiB(result.effectiveLogical)}
                   </div>
                 </div>
@@ -402,13 +400,15 @@ function PowerStoreCalculator() {
                   <span>Virtual spare drives (1 per set)</span>
                   <span>{result.virtualSpares}</span>
                 </div>
-                <div className="flex justify بین">
+                <div className="flex justify-between">
                   <span>Drives used for RAID stripes</span>
                   <span>{result.effectiveDrives}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>RAID efficiency (data / total)</span>
-                  <span>{(result.raidEfficiency * 100).toFixed(1)}%</span>
+                  <span>
+                    {(result.raidEfficiency * 100).toFixed(1)}%
+                  </span>
                 </div>
               </div>
             </>
@@ -458,7 +458,10 @@ const YELLOW = "#f4c21f";
 
 export default function PowerStoreCalculatorePage() {
   return (
-    <main className="min-h-screen bg-[#f8fafc] text-right" dir="rtl">
+    <main
+      className="min-h-screen bg-[#f8fafc] text-right"
+      dir="rtl"
+    >
       <Head>
         <title>
           PowerStore Calculator | Dell EMC PowerStore NVMe Capacity &amp; RAID
@@ -490,7 +493,7 @@ export default function PowerStoreCalculatorePage() {
         </div>
       </section>
 
-      {/* content */}
+            {/* content */}
       <section
         className="powerstore-calculator max-w-7xl mx-auto px-2 sm:px-4 py-6 md:py-10"
         lang="en"
