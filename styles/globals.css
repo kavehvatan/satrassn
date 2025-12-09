@@ -1,95 +1,237 @@
 /* styles/globals.css */
 
-/* Tailwind base layers */
+/* -------------------- Vazirmatn از Google Fonts -------------------- */
+/* حتماً قبل از @tailwind باشد */
+@import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap");
+
+/* -------------------- Tailwind base layers -------------------- */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* -------------------- Font: BNazanin -------------------- */
-@font-face {
-  font-family: 'BNazanin';
-  src: url('/fonts/bnazanin/BNazanin.woff2') format('woff2'),
-       url('/fonts/bnazanin/BNazanin.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+/* -------------------- Base Reset -------------------- */
+* {
+  box-sizing: border-box;
 }
 
-/* -------------------- Base Reset (ساده و بی‌خطر) -------------------- */
-* { box-sizing: border-box; }
-
-html, body {
+html,
+body {
   padding: 0;
   margin: 0;
-  font-family: "BNazanin", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-family: "Vazirmatn", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, Arial, sans-serif;
   direction: rtl;
   background-color: #fff;
   color: #111;
 }
 
-/* تیترها هم قطعاً از همان فونت استفاده کنند */
-h1, h2, h3, h4, h5, h6 {
-  font-family: "BNazanin", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+/* تیترها */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Vazirmatn", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, Arial, sans-serif;
   font-weight: bold;
   line-height: 1.4;
 }
 
 /* متن‌های عمومی */
-p, span, li, a, button, input, textarea {
-  font-family: "BNazanin", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+p,
+span,
+li,
+a,
+button,
+input,
+textarea {
+  font-family: "Vazirmatn", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, Arial, sans-serif;
 }
 
-/* لینک‌ها از رنگ فعلی محیط تبعیت کنند (Tailwind رنگ می‌دهد) */
-a { color: inherit; text-decoration: none; }
+/* لینک‌ها رنگ را از محیط می‌گیرند */
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
 /* -------------------- Color Tokens -------------------- */
-:root{
-  --teal:#14b8a6;   /* TEAL */
-  --yellow:#f4c21f; /* YELLOW */
+:root {
+  --teal: #14b8a6;   /* TEAL */
+  --yellow: #f4c21f; /* YELLOW */
 }
 
-/* -------------------- Buttons (سازگار با کد موجود) -------------------- */
-/* پایه‌ی دکمه */
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:.5rem 1rem;            /* px-4 py-2 معادل تقریبی */
-  border-radius:9999px;          /* rounded-full */
-  font-weight:700;               /* font-bold */
-  font-size:.875rem;             /* text-sm */
-  transition: all .2s ease;
+/* -------------------- Buttons -------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
   line-height: 1.2;
 }
 
-/* پرِ زرد: هم .btn-primary هم .btn-filled-yellow */
 .btn-primary,
-.btn-filled-yellow{
+.btn-filled-yellow {
   background: var(--yellow);
   color: #000;
   border: 1px solid transparent;
 }
+
 .btn-primary:hover,
-.btn-filled-yellow:hover{ filter: brightness(0.95); }
-.btn-primary:focus-visible,
-.btn-filled-yellow:focus-visible{
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(244,194,31,0.4);
+.btn-filled-yellow:hover {
+  filter: brightness(0.95);
 }
 
-/* دورخط تیل: هم .btn-outline هم .btn-outline-teal */
+.btn-primary:focus-visible,
+.btn-filled-yellow:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(244, 194, 31, 0.4);
+}
+
 .btn-outline,
-.btn-outline-teal{
-  border:1px solid var(--teal);
+.btn-outline-teal {
+  border: 1px solid var(--teal);
   color: var(--teal);
   background: transparent;
 }
+
 .btn-outline:hover,
-.btn-outline-teal:hover{
+.btn-outline-teal:hover {
   background: color-mix(in srgb, var(--teal) 10%, transparent);
 }
+
 .btn-outline:focus-visible,
-.btn-outline-teal:focus-visible{
+.btn-outline-teal:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(20,184,166,0.35);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.35);
+}
+
+/* -------------------- Unity Calculator: LTR + English font -------------------- */
+/* فقط خود MidrangeSizer */
+.unity-calculator {
+  direction: ltr;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+  text-align: left; /* این خط جدید، همه چیز داخل Calculator را چپ‌چین می‌کند */
+}
+
+/* بچه‌ها فقط فونت انگلیسی بگیرند، text-align ارث‌بَر از root است */
+.unity-calculator * {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+/* -------------------- Unity Configurator: LTR + English font -------------------- */
+.unity-configurator {
+  direction: ltr;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+.unity-configurator * {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+/* اسپین‌باتن‌های Qty در Configurator */
+.unity-configurator input[type="number"]::-webkit-inner-spin-button,
+.unity-configurator input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.unity-configurator input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* -------------------- PowerStore Configurator: LTR + English font -------------------- */
+/* فقط صفحه PowerStore Configurator
+   ساختارش مثل Unity Configurator هست ولی بدون text-align
+   تا کلاس‌های text-center / text-left تیلویند درست کار کنند. */
+
+.powerstore-configurator {
+  direction: ltr;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+.powerstore-configurator * {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+/* -------------------- PowerStore Calculator: LTR + English font -------------------- */
+.powerstore-calculator {
+  direction: ltr;
+  text-align: left;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+.powerstore-calculator * {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+/* -------------------- Hero Heading: Pressure + Rolling -------------------- */
+.pressure-text {
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.6),
+    0 2px 6px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.02em;
+  -webkit-text-stroke-width: 0.25px;
+  -webkit-text-stroke-color: rgba(0, 0, 0, 0.55);
+  transition:
+    text-shadow 180ms ease-out,
+    -webkit-text-stroke-width 180ms ease-out;
+}
+
+/* انیمیشن رول کوتاه روی هاور */
+@keyframes text-roll {
+  0% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.pressure-text:hover {
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.8),
+    0 4px 12px rgba(0, 0, 0, 0.9);
+  -webkit-text-stroke-width: 0.6px;
+  animation: text-roll 420ms ease-out;
+}
+
+/* -------------------- Falling subtitle (letters dropping) -------------------- */
+
+.subtitle-fall-wrapper {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.subtitle-char {
+  display: inline-block;
+}
+
+/* وقتی کلاس is-falling فعال بشه، حروف یکی‌یکی می‌ریزند پایین */
+.subtitle-fall-wrapper.is-falling .subtitle-char {
+  animation: subtitle-fall 700ms ease-out forwards;
+  animation-delay: calc(var(--i) * 40ms);
+}
+
+@keyframes subtitle-fall {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(120%);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(260%);
+    opacity: 0;
+  }
 }

@@ -228,152 +228,146 @@ function Calculator() {
     0
   );
 
-  const selectStyle = {
-    width: "auto",
-    minWidth: 100,
-    padding: "8px 10px",
-    border: "1px solid #d1d5db",
-    borderRadius: 10,
-  };
-
   const selectClasses =
     "w-full rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500";
 
   return (
-    <section
-      className="unity-calculator"
-      style={{ maxWidth: 1100, margin: "0 auto", padding: 24 }}
-    >
-      <h1 style={{ fontSize: 34, fontWeight: 800, marginBottom: 16 }}>
+    <section className="unity-calculator max-w-6xl mx-auto px-4 py-6 sm:py-8">
+      <h1 className="text-2xl sm:text-3xl font-extrabold mb-4">
         Unity XT RAID Calculator
       </h1>
 
-      {/* Model selector */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          marginBottom: 16,
-        }}
-      >
-        <div style={{ width: 90, fontWeight: 700 }}>Model</div>
-        <select
-          value={model}
-          onChange={(e) => onModelChange(e.target.value)}
-          style={selectStyle}
-        >
-          {Object.keys(MODELS).map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
+      {/* کارت مدل */}
+      <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-4 sm:p-5 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="text-sm font-semibold sm:w-24">Model</div>
+          <div className="flex-1">
+            <select
+              value={model}
+              onChange={(e) => onModelChange(e.target.value)}
+              className={selectClasses}
+            >
+              {Object.keys(MODELS).map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-slate-500">
+              Max drives for this model: {MODELS[model]}
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* DESKTOP: جدول با اسکرول افقی (همان مدل قبلی) */}
-      <div
-        className="hidden md:block"
-        style={{ marginTop: 4, overflowX: "auto" }}
-      >
-        <table
-          style={{
-            borderCollapse: "separate",
-            borderSpacing: "0 6px",
-            minWidth: 820,
-            margin: "0 auto",
-          }}
-        >
-          <thead>
-            <tr style={{ fontSize: 12, color: "#6b7280", textAlign: "left" }}>
-              <th style={{ width: 220 }}></th>
-              <th>Disk</th>
-              <th>RAID</th>
-              <th>Spare Policy</th>
-              <th>Set</th>
-              <th>Count</th>
-            </tr>
-          </thead>
+      {/* کارت Tier ها – به صورت باکس برای هر Tier، بدون جدول */}
+      <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-4 sm:p-5">
+        <h2 className="font-semibold text-lg mb-3">Tiers configuration</h2>
 
-          <tbody>
-            {TIERS.map(([tier, disks]) => {
-              const r = rows[tier];
-              const setOptions = RAID_SETS[r.raid];
-              const items = suggestions[tier] || [{ value: 0, disabled: false }];
-              const max = MODELS[model];
-              const rem = Math.max(0, max - usedByOthers(tier));
-              const [a, b] = parseSet(r.set);
+        <div className="space-y-4">
+          {TIERS.map(([tier, disks]) => {
+            const r = rows[tier];
+            const setOptions = RAID_SETS[r.raid];
+            const items = suggestions[tier] || [{ value: 0, disabled: false }];
+            const max = MODELS[model];
+            const rem = Math.max(0, max - usedByOthers(tier));
+            const [a, b] = parseSet(r.set);
 
-              const minNeeded =
-                a +
-                b +
-                Math.max(
-                  per32(r.spare),
-                  per32(r.spare) * Math.ceil((a + b) / 32)
-                );
+            const minNeeded =
+              a +
+              b +
+              Math.max(
+                per32(r.spare),
+                per32(r.spare) * Math.ceil((a + b) / 32)
+              );
 
-              const rowGrey = rem < minNeeded && r.count === 0;
+            const rowGrey = rem < minNeeded && r.count === 0;
 
-              return (
-                <tr key={tier} style={{ opacity: rowGrey ? 0.5 : 1 }}>
-                  <td style={{ fontWeight: 700, paddingRight: 6 }}>{tier}</td>
+            return (
+              <div
+                key={tier}
+                className={`rounded-xl border px-3 py-3 sm:px-4 sm:py-4 ${
+                  rowGrey
+                    ? "bg-slate-50 border-slate-200 opacity-60"
+                    : "bg-slate-50 border-slate-200"
+                }`}
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <div className="font-semibold text-sm sm:text-base">
+                    {tier}
+                  </div>
+                  <div className="text-[11px] sm:text-xs text-slate-500">
+                    Remaining drives for this tier: {rem}
+                  </div>
+                </div>
 
-                  <td>
+                <div className="grid gap-3 md:grid-cols-5">
+                  {/* Disk */}
+                  <div>
+                    <div className="text-xs font-medium mb-1">Disk</div>
                     <select
                       value={r.disk}
                       onChange={(e) =>
                         onRowChange(tier, { disk: e.target.value })
                       }
-                      style={selectStyle}
+                      className={selectClasses}
                     >
                       {disks.map((d) => (
                         <option key={d}>{d}</option>
                       ))}
                     </select>
-                  </td>
+                  </div>
 
-                  <td>
+                  {/* RAID */}
+                  <div>
+                    <div className="text-xs font-medium mb-1">RAID</div>
                     <select
                       value={r.raid}
                       onChange={(e) =>
                         onRowChange(tier, { raid: e.target.value })
                       }
-                      style={selectStyle}
+                      className={selectClasses}
                     >
                       {RAID_OPTIONS[tier].map((rt) => (
                         <option key={rt}>{rt}</option>
                       ))}
                     </select>
-                  </td>
+                  </div>
 
-                  <td>
+                  {/* Spare Policy */}
+                  <div>
+                    <div className="text-xs font-medium mb-1">Spare policy</div>
                     <select
                       value={r.spare}
                       onChange={(e) =>
                         onRowChange(tier, { spare: e.target.value })
                       }
-                      style={selectStyle}
+                      className={selectClasses}
                     >
                       <option>1/32</option>
                       <option>2/32</option>
                     </select>
-                  </td>
+                  </div>
 
-                  <td>
+                  {/* Set */}
+                  <div>
+                    <div className="text-xs font-medium mb-1">Set</div>
                     <select
                       value={r.set}
                       onChange={(e) =>
                         onRowChange(tier, { set: e.target.value })
                       }
-                      style={selectStyle}
+                      className={selectClasses}
                     >
                       {setOptions.map((s) => (
                         <option key={s}>{s}</option>
                       ))}
                     </select>
-                  </td>
+                  </div>
 
-                  <td>
+                  {/* Count */}
+                  <div>
+                    <div className="text-xs font-medium mb-1">Count</div>
                     <select
                       value={String(r.count)}
                       onChange={(e) =>
@@ -381,7 +375,7 @@ function Calculator() {
                           count: parseInt(e.target.value, 10),
                         })
                       }
-                      style={selectStyle}
+                      className={selectClasses}
                     >
                       {items.map((o) => (
                         <option
@@ -393,177 +387,40 @@ function Calculator() {
                         </option>
                       ))}
                     </select>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* MOBILE: کارت برای هر Tier، بدون جدول */}
-      <div className="md:hidden" style={{ marginTop: 8 }}>
-        {TIERS.map(([tier, disks]) => {
-          const r = rows[tier];
-          const setOptions = RAID_SETS[r.raid];
-          const items = suggestions[tier] || [{ value: 0, disabled: false }];
-          const max = MODELS[model];
-          const rem = Math.max(0, max - usedByOthers(tier));
-          const [a, b] = parseSet(r.set);
-
-          const minNeeded =
-            a +
-            b +
-            Math.max(
-              per32(r.spare),
-              per32(r.spare) * Math.ceil((a + b) / 32)
-            );
-
-          const rowGrey = rem < minNeeded && r.count === 0;
-
-          return (
-            <div
-              key={tier}
-              className={`mb-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 ${
-                rowGrey ? "opacity-60" : ""
-              }`}
-            >
-              <div className="flex justify-between items-center mb-2">
-                <div className="font-semibold text-sm">{tier}</div>
-                <div className="text-[11px] text-slate-500">
-                  Remaining: {rem}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(2,minmax(0,1fr))",
-                  gap: 8,
-                }}
-              >
-                {/* Disk */}
-                <div>
-                  <div className="text-[11px] font-medium mb-1">Disk</div>
-                  <select
-                    value={r.disk}
-                    onChange={(e) =>
-                      onRowChange(tier, { disk: e.target.value })
-                    }
-                    className={selectClasses}
-                  >
-                    {disks.map((d) => (
-                      <option key={d}>{d}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* RAID */}
-                <div>
-                  <div className="text-[11px] font-medium mb-1">RAID</div>
-                  <select
-                    value={r.raid}
-                    onChange={(e) =>
-                      onRowChange(tier, { raid: e.target.value })
-                    }
-                    className={selectClasses}
-                  >
-                    {RAID_OPTIONS[tier].map((rt) => (
-                      <option key={rt}>{rt}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Spare policy */}
-                <div>
-                  <div className="text-[11px] font-medium mb-1">
-                    Spare policy
                   </div>
-                  <select
-                    value={r.spare}
-                    onChange={(e) =>
-                      onRowChange(tier, { spare: e.target.value })
-                    }
-                    className={selectClasses}
-                  >
-                    <option>1/32</option>
-                    <option>2/32</option>
-                  </select>
                 </div>
 
-                {/* Set */}
-                <div>
-                  <div className="text-[11px] font-medium mb-1">Set</div>
-                  <select
-                    value={r.set}
-                    onChange={(e) =>
-                      onRowChange(tier, { set: e.target.value })
-                    }
-                    className={selectClasses}
-                  >
-                    {setOptions.map((s) => (
-                      <option key={s}>{s}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Count – full width */}
-                <div style={{ gridColumn: "span 2 / span 2" }}>
-                  <div className="text-[11px] font-medium mb-1">Count</div>
-                  <select
-                    value={String(r.count)}
-                    onChange={(e) =>
-                      onRowChange(tier, {
-                        count: parseInt(e.target.value, 10),
-                      })
-                    }
-                    className={selectClasses}
-                  >
-                    {items.map((o) => (
-                      <option
-                        key={o.value}
-                        value={o.value}
-                        disabled={o.disabled}
-                      >
-                        {o.value}
-                      </option>
-                    ))}
-                  </select>
+                <div className="mt-2 text-[11px] text-slate-500">
+                  Minimum drives needed for this tier with current set/spare:{" "}
+                  {minNeeded}
                 </div>
               </div>
+            );
+          })}
+        </div>
 
-              <div className="mt-2 text-[11px] text-slate-500">
-                Min required with current set/spare: {minNeeded}
-              </div>
+        {/* دکمه Calculate + پیام خطا / توضیح */}
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <button
+            onClick={onCalc}
+            disabled={loading}
+            className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loading ? "Calculating…" : "Calculate"}
+          </button>
+          {error && (
+            <div className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              {error}
             </div>
-          );
-        })}
+          )}
+        </div>
       </div>
-
-      {/* دکمه */}
-      <button
-        onClick={onCalc}
-        disabled={loading}
-        style={{
-          marginTop: 18,
-          background: "#2563eb",
-          color: "#fff",
-          border: 0,
-          borderRadius: 10,
-          padding: "12px 18px",
-          fontWeight: 700,
-        }}
-      >
-        {loading ? "Calculating…" : "Calculate"}
-      </button>
 
       {/* نتایج */}
-      <div style={{ marginTop: 20 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>
-          Results
-        </h2>
+      <div className="mt-6 rounded-2xl bg-white border border-slate-200 shadow-sm p-4 sm:p-5">
+        <h2 className="text-lg font-semibold mb-3">Results</h2>
 
-        <ul>
+        <ul className="text-sm text-slate-700 space-y-1">
           {Object.entries(results).map(([t, v]) => (
             <li key={t}>
               <b>{t}:</b> {v.usableTB.toFixed(2)} TB
@@ -571,24 +428,9 @@ function Calculator() {
           ))}
         </ul>
 
-        <div style={{ fontWeight: 800, marginTop: 8 }}>
-          Total: {totalTb.toFixed(2)} TB
+        <div className="font-bold mt-3 text-sm">
+          Total usable capacity: {totalTb.toFixed(2)} TB
         </div>
-
-        {error && (
-          <div
-            style={{
-              marginTop: 12,
-              background: "#fee2e2",
-              border: "1px solid #fecaca",
-              color: "#7f1d1d",
-              borderRadius: 10,
-              padding: 12,
-            }}
-          >
-            {error}
-          </div>
-        )}
       </div>
     </section>
   );
@@ -654,10 +496,7 @@ export default function UnityMidrangeSizer() {
             <span style={{ color: TEAL }}>Unity</span>{" "}
             <span style={{ color: YELLOW }}>MidrangeSizer</span>
           </h1>
-          <p
-            className="text-slate-400 mt-2 text-sm md:text-base"
-            dir="ltr"
-          >
+          <p className="text-slate-400 mt-2 text-sm md:text-base" dir="ltr">
             Configure Dell EMC Unity XT RAID groups and calculate usable
             capacity.
           </p>

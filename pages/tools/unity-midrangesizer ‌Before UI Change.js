@@ -27,16 +27,7 @@ const RAID_SETS = {
 const TIERS = [
   [
     "Extreme Performance",
-    [
-      "400GB",
-      "800GB",
-      "1.6TB",
-      "1.92TB",
-      "3.2TB",
-      "3.84TB",
-      "7.68TB",
-      "15.36TB",
-    ],
+    ["400GB", "800GB", "1.6TB", "1.92TB", "3.2TB", "3.84TB", "7.68TB", "15.36TB"],
   ],
   ["Performance", ["1.2TB", "1.8TB"]],
   ["Capacity", ["4TB", "6TB", "12TB"]],
@@ -236,9 +227,6 @@ function Calculator() {
     borderRadius: 10,
   };
 
-  const selectClasses =
-    "w-full rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500";
-
   return (
     <section
       className="unity-calculator"
@@ -249,20 +237,9 @@ function Calculator() {
       </h1>
 
       {/* Model selector */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          marginBottom: 16,
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
         <div style={{ width: 90, fontWeight: 700 }}>Model</div>
-        <select
-          value={model}
-          onChange={(e) => onModelChange(e.target.value)}
-          style={selectStyle}
-        >
+        <select value={model} onChange={(e) => onModelChange(e.target.value)} style={selectStyle}>
           {Object.keys(MODELS).map((m) => (
             <option key={m} value={m}>
               {m}
@@ -271,11 +248,8 @@ function Calculator() {
         </select>
       </div>
 
-      {/* DESKTOP: جدول با اسکرول افقی (همان مدل قبلی) */}
-      <div
-        className="hidden md:block"
-        style={{ marginTop: 4, overflowX: "auto" }}
-      >
+      {/* جدول با اسکرول افقی */}
+      <div style={{ marginTop: 4, overflowX: "auto" }}>
         <table
           style={{
             borderCollapse: "separate",
@@ -307,10 +281,7 @@ function Calculator() {
               const minNeeded =
                 a +
                 b +
-                Math.max(
-                  per32(r.spare),
-                  per32(r.spare) * Math.ceil((a + b) / 32)
-                );
+                Math.max(per32(r.spare), per32(r.spare) * Math.ceil((a + b) / 32));
 
               const rowGrey = rem < minNeeded && r.count === 0;
 
@@ -321,9 +292,7 @@ function Calculator() {
                   <td>
                     <select
                       value={r.disk}
-                      onChange={(e) =>
-                        onRowChange(tier, { disk: e.target.value })
-                      }
+                      onChange={(e) => onRowChange(tier, { disk: e.target.value })}
                       style={selectStyle}
                     >
                       {disks.map((d) => (
@@ -335,9 +304,7 @@ function Calculator() {
                   <td>
                     <select
                       value={r.raid}
-                      onChange={(e) =>
-                        onRowChange(tier, { raid: e.target.value })
-                      }
+                      onChange={(e) => onRowChange(tier, { raid: e.target.value })}
                       style={selectStyle}
                     >
                       {RAID_OPTIONS[tier].map((rt) => (
@@ -349,9 +316,7 @@ function Calculator() {
                   <td>
                     <select
                       value={r.spare}
-                      onChange={(e) =>
-                        onRowChange(tier, { spare: e.target.value })
-                      }
+                      onChange={(e) => onRowChange(tier, { spare: e.target.value })}
                       style={selectStyle}
                     >
                       <option>1/32</option>
@@ -362,9 +327,7 @@ function Calculator() {
                   <td>
                     <select
                       value={r.set}
-                      onChange={(e) =>
-                        onRowChange(tier, { set: e.target.value })
-                      }
+                      onChange={(e) => onRowChange(tier, { set: e.target.value })}
                       style={selectStyle}
                     >
                       {setOptions.map((s) => (
@@ -377,18 +340,12 @@ function Calculator() {
                     <select
                       value={String(r.count)}
                       onChange={(e) =>
-                        onRowChange(tier, {
-                          count: parseInt(e.target.value, 10),
-                        })
+                        onRowChange(tier, { count: parseInt(e.target.value, 10) })
                       }
                       style={selectStyle}
                     >
                       {items.map((o) => (
-                        <option
-                          key={o.value}
-                          value={o.value}
-                          disabled={o.disabled}
-                        >
+                        <option key={o.value} value={o.value} disabled={o.disabled}>
                           {o.value}
                         </option>
                       ))}
@@ -401,143 +358,17 @@ function Calculator() {
         </table>
       </div>
 
-      {/* MOBILE: کارت برای هر Tier، بدون جدول */}
-      <div className="md:hidden" style={{ marginTop: 8 }}>
-        {TIERS.map(([tier, disks]) => {
-          const r = rows[tier];
-          const setOptions = RAID_SETS[r.raid];
-          const items = suggestions[tier] || [{ value: 0, disabled: false }];
-          const max = MODELS[model];
-          const rem = Math.max(0, max - usedByOthers(tier));
-          const [a, b] = parseSet(r.set);
-
-          const minNeeded =
-            a +
-            b +
-            Math.max(
-              per32(r.spare),
-              per32(r.spare) * Math.ceil((a + b) / 32)
-            );
-
-          const rowGrey = rem < minNeeded && r.count === 0;
-
-          return (
-            <div
-              key={tier}
-              className={`mb-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 ${
-                rowGrey ? "opacity-60" : ""
-              }`}
-            >
-              <div className="flex justify-between items-center mb-2">
-                <div className="font-semibold text-sm">{tier}</div>
-                <div className="text-[11px] text-slate-500">
-                  Remaining: {rem}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(2,minmax(0,1fr))",
-                  gap: 8,
-                }}
-              >
-                {/* Disk */}
-                <div>
-                  <div className="text-[11px] font-medium mb-1">Disk</div>
-                  <select
-                    value={r.disk}
-                    onChange={(e) =>
-                      onRowChange(tier, { disk: e.target.value })
-                    }
-                    className={selectClasses}
-                  >
-                    {disks.map((d) => (
-                      <option key={d}>{d}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* RAID */}
-                <div>
-                  <div className="text-[11px] font-medium mb-1">RAID</div>
-                  <select
-                    value={r.raid}
-                    onChange={(e) =>
-                      onRowChange(tier, { raid: e.target.value })
-                    }
-                    className={selectClasses}
-                  >
-                    {RAID_OPTIONS[tier].map((rt) => (
-                      <option key={rt}>{rt}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Spare policy */}
-                <div>
-                  <div className="text-[11px] font-medium mb-1">
-                    Spare policy
-                  </div>
-                  <select
-                    value={r.spare}
-                    onChange={(e) =>
-                      onRowChange(tier, { spare: e.target.value })
-                    }
-                    className={selectClasses}
-                  >
-                    <option>1/32</option>
-                    <option>2/32</option>
-                  </select>
-                </div>
-
-                {/* Set */}
-                <div>
-                  <div className="text-[11px] font-medium mb-1">Set</div>
-                  <select
-                    value={r.set}
-                    onChange={(e) =>
-                      onRowChange(tier, { set: e.target.value })
-                    }
-                    className={selectClasses}
-                  >
-                    {setOptions.map((s) => (
-                      <option key={s}>{s}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Count – full width */}
-                <div style={{ gridColumn: "span 2 / span 2" }}>
-                  <div className="text-[11px] font-medium mb-1">Count</div>
-                  <select
-                    value={String(r.count)}
-                    onChange={(e) =>
-                      onRowChange(tier, {
-                        count: parseInt(e.target.value, 10),
-                      })
-                    }
-                    className={selectClasses}
-                  >
-                    {items.map((o) => (
-                      <option
-                        key={o.value}
-                        value={o.value}
-                        disabled={o.disabled}
-                      >
-                        {o.value}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="mt-2 text-[11px] text-slate-500">
-                Min required with current set/spare: {minNeeded}
-              </div>
-            </div>
-          );
-        })}
+      {/* خط راهنما */}
+      <div
+        style={{
+          marginTop: 8,
+          fontSize: 12,
+          color: "#475569",
+          textAlign: "center",
+          display: "none",
+        }}
+      >
+        برای دیدن گزینه‌های بیشتر، جدول را به چپ و راست بکشید
       </div>
 
       {/* دکمه */}
@@ -559,9 +390,7 @@ function Calculator() {
 
       {/* نتایج */}
       <div style={{ marginTop: 20 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>
-          Results
-        </h2>
+        <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>Results</h2>
 
         <ul>
           {Object.entries(results).map(([t, v]) => (
@@ -606,9 +435,9 @@ export default function UnityMidrangeSizer() {
         </title>
 
         <meta
-          name="description"
-          content="Unity XT MidrangeSizer؛ ابزار آنلاین محاسبه ظرفیت و RAID برای Dell EMC Unity XT 380 / 480 / 680 / 880. Online RAID & capacity calculator for Dell EMC Unity XT arrays."
-        />
+  name="description"
+  content="Unity XT MidrangeSizer؛ ابزار آنلاین محاسبه ظرفیت و RAID برای Dell EMC Unity XT 380 / 480 / 680 / 880. Online RAID & capacity calculator for Dell EMC Unity XT arrays."
+/>
 
         <meta
           name="keywords"
@@ -655,12 +484,11 @@ export default function UnityMidrangeSizer() {
             <span style={{ color: YELLOW }}>MidrangeSizer</span>
           </h1>
           <p
-            className="text-slate-400 mt-2 text-sm md:text-base"
-            dir="ltr"
-          >
-            Configure Dell EMC Unity XT RAID groups and calculate usable
-            capacity.
-          </p>
+  className="text-slate-400 mt-2 text-sm md:text-base"
+  dir="ltr"
+>
+  Configure Dell EMC Unity XT RAID groups and calculate usable capacity.
+</p>
         </div>
       </section>
 

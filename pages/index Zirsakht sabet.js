@@ -199,7 +199,7 @@ function SolutionCard({ name, slug }) {
   );
 }
 
-/* =============== AnimatedHeadline (دیگه استفاده نمی‌شه ولی نگه داشتیم) =============== */
+/* =============== AnimatedHeadline =============== */
 function AnimatedHeadline({
   phrases = ["زیرساخت هوشمند", "دقت مهندسی"],
   typeSpeed = 140,
@@ -231,29 +231,6 @@ function AnimatedHeadline({
   );
 }
 
-/* =============== FallingSubtitle =============== */
-function FallingSubtitle({ text, falling }) {
-  const chars = Array.from(text || "");
-
-  return (
-    <p className="mt-4 text-gray-300">
-      <span
-        className={`subtitle-fall-wrapper ${falling ? "is-falling" : ""}`}
-      >
-        {chars.map((ch, i) => (
-          <span
-            key={i}
-            className="subtitle-char"
-            style={{ "--i": i }}
-          >
-            {ch === " " ? "\u00A0" : ch}
-          </span>
-        ))}
-      </span>
-    </p>
-  );
-}
-
 /* =============== Page =============== */
 export default function Home() {
   const safeVendors = Array.isArray(vendors) ? vendors : [];
@@ -279,9 +256,8 @@ export default function Home() {
     });
   };
 
-  // --- Fade کل محتوای هیرو هنگام اسکرول + افتادن زیرتیتر
+  // --- Fade کل محتوای هیرو هنگام اسکرول
   const [heroOpacity, setHeroOpacity] = useState(1);
-  const [subtitleFalling, setSubtitleFalling] = useState(false);
 
   useEffect(() => {
     const FADE_END = 340;
@@ -293,12 +269,6 @@ export default function Home() {
         const y = window.scrollY || 0;
         const next = Math.max(0, Math.min(1, 1 - y / FADE_END));
         setHeroOpacity(next);
-
-        // شروع اسکرول → زیرتیتر بریزه پایین
-        if (y > 20) {
-          setSubtitleFalling(true);
-        }
-
         ticking = false;
       });
     };
@@ -329,16 +299,17 @@ export default function Home() {
           }}
         >
           <div>
-            <h1 className="pressure-text text-3xl md:text-4xl font-extrabold leading-tight">
-              <span style={{ color: TEAL }}>زیرساخت هوشمند،</span>{" "}
-              <span style={{ color: YELLOW }}>دقت مهندسی</span>
+            <h1
+              className="text-4xl md:text-5xl font-extrabold leading-tight"
+              style={{ color: "#f4c21f" }} // زرد برند
+            >
+              <AnimatedHeadline
+                phrases={["زیرساخت هوشمند", "دقت مهندسی"]}
+              />
             </h1>
-
-            <FallingSubtitle
-              text="از مشاوره تا پشتیبانی، درکنار شما."
-              falling={subtitleFalling}
-            />
-
+            <p className="mt-4 text-gray-300">
+              از مشاوره تا پشتیبانی، درکنار شما.
+            </p>
             <div className="mt-6 flex gap-3">
               <a
                 href="/contact"

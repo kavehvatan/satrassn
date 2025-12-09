@@ -1,4 +1,3 @@
-// tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -17,6 +16,9 @@ module.exports = {
         },
       },
       fontFamily: {
+        // هرجا font-sans بزنی، Vazirmatn می‌خوره
+        sans: ["Vazirmatn", "ui-sans-serif", "system-ui", "sans-serif"],
+        // در صورت نیاز بعداً
         bnazanin: ["BNazanin", "ui-sans-serif", "system-ui", "sans-serif"],
       },
     },

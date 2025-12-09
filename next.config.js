@@ -1,22 +1,69 @@
 /** @type {import('next').NextConfig} */
+
+// -------------------- Security headers + CSP --------------------
+const ContentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self'",
+  // برای استایل‌ها (Tailwind/Next) فعلاً به 'unsafe-inline' نیاز داریم
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  // فقط تصاویر از خود سایت و data URI
+  "img-src 'self' data:",
+  // فونت فقط از خود سایت، gstatic و data URI
+  "font-src 'self' https://fonts.gstatic.com data:",
+  // کمی بازتر برای اتصال‌ها
+  "connect-src 'self' https://www.google.com https://www.googlebot.com https://search.google.com",
+  "frame-ancestors 'self'",
+  "form-action 'self'",
+  "base-uri 'self'",
+  "upgrade-insecure-requests",
+].join("; ");
+
+const securityHeaders = [
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
+  },
+  { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+  { key: "X-DNS-Prefetch-Control", value: "on" },
+];
+
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: { unoptimized: true },
-  output: 'standalone',
-};
-module.exports = nextConfig;
+  output: "standalone",
+  poweredByHeader: false,
 
-/** Security headers (SSR fallback to middleware) */
-const securityHeaders = [
-  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
-  { key: 'X-Content-Type-Options', value: 'nosniff' },
-  { key: 'Cross-Origin-Resource-Policy', value: 'same-site' },
-  { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
-];
-module.exports.headers = async () => {
-  return [
-    { source: '/(.*)', headers: securityHeaders },
-  ];
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          ...securityHeaders,
+          { key: "Content-Security-Policy", value: ContentSecurityPolicy },
+        ],
+      },
+    ];
+  },
+
+  async redirects() {
+    return [
+      {
+        source: "/contact-satrass",
+        destination: "/contact",
+        permanent: true, // 301
+      },
+      {
+        source: "/contact-satrass-2",
+        destination: "/contact",
+        permanent: true, // 301
+      },
+    ];
+  },
 };
+
+module.exports = nextConfig;

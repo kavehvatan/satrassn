@@ -2,6 +2,9 @@
 import { useCallback, useMemo, useState } from "react";
 import Head from "next/head";
 
+const TEAL = "#14b8a6";
+const YELLOW = "#f4c21f";
+
 function toFaStatus(s) {
   const v = String(s || "").toLowerCase();
   if (v === "active" || v === "فعال") return "فعال";
@@ -26,8 +29,8 @@ function asCSV(rows) {
       r.model ?? "",
       r.status ?? "",
       r.end ?? r.expireAt ?? "",
-      r.notes ?? ""
-    ].map(v => {
+      r.notes ?? "",
+    ].map((v) => {
       const s = String(v ?? "");
       return /[,"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     });
@@ -88,13 +91,27 @@ export default function WarrantyPage() {
   const empty = useMemo(() => !rows || rows.length === 0, [rows]);
 
   return (
-    <>
+    <main dir="rtl" className="min-h-screen bg-[#f8fafc] text-right font-sans">
       <Head>
         <title>استعلام گارانتی</title>
       </Head>
 
-      <div className="max-w-6xl mx-auto px-4 py-8" dir="rtl">
-        <h1 className="text-3xl font-extrabold mb-6">استعلام گارانتی</h1>
+      {/* هدر تیره شبیه Calculator */}
+      <section className="bg-slate-900 text-white py-8 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide">
+            <span style={{ color: TEAL }}>استعلام</span>{" "}
+            <span style={{ color: YELLOW }}>گارانتی</span>
+          </h1>
+          <p className="text-slate-400 mt-2 text-sm md:text-base">
+            بررسی وضعیت گارانتی تجهیزات ثبت‌شده در سامانهٔ ساتراس
+          </p>
+        </div>
+      </section>
+
+      {/* محتوای اصلی استعلام */}
+      <section className="max-w-6xl mx-auto px-4 py-8">
+        <h2 className="text-xl md:text-2xl font-bold mb-4">جست‌وجوی گارانتی</h2>
         <p className="text-gray-600 mb-4">
           سریال‌ها را وارد کنید (هر خط جداگانه، یا با کاما). داده‌ها از پایگاه داخلی
           ساتراس خوانده می‌شود.
@@ -175,12 +192,6 @@ export default function WarrantyPage() {
           </table>
         </div>
 
-        <p className="text-gray-500 text-sm mt-4">
-          * منبع داده:{" "}
-          <code className="bg-gray-100 rounded px-2 py-1">data/warranty.json</code>{" "}
-          — برای به‌روزرسانی، فایل را ادیت و دیپلوی کنید.
-        </p>
-
         <p className="mt-6 text-gray-700 text-sm leading-relaxed">
           شرکت ساتراس برای تمامی تجهیزاتی که عرضه می‌کند،{" "}
           <span className="font-semibold">گارانتی معتبر</span> و{" "}
@@ -189,7 +200,7 @@ export default function WarrantyPage() {
           نیاز <span className="font-semibold">جایگزینی تجهیز</span> خواهد بود تا
           سرویس مشتریان بدون وقفه ادامه یابد.
         </p>
-      </div>
-    </>
+      </section>
+    </main>
   );
 }

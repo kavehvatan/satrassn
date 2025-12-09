@@ -7,24 +7,28 @@ const TOOLS = [
     desc: "انتخاب و پیکربندی کامل مدل‌های PowerStore",
     href: "/tools/powerstore-configurator",
     tone: "yellow",
+    enabled: true,
   },
   {
     title: "Unity MidrangeSizer",
     desc: "محاسبه ظرفیت و پیکربندی بهینه Unity",
     href: "/tools/unity-midrangesizer",
     tone: "teal",
+    enabled: true,
   },
   {
     title: "PowerStore RAID Calculator",
     desc: "محاسبه ظرفیت و افزونگی آرایه‌های RAID در PowerStore",
-    href: "#",
+    href: "/tools/powerstore-calculator",
     tone: "yellow",
+    enabled: true, // هنوز صفحه نداره
   },
   {
     title: "Unity Configurator",
     desc: "طراحی و انتخاب پیکربندی مناسب برای خانواده Unity XT",
     href: "/tools/unity-configurator",
     tone: "teal",
+    enabled: true,
   },
 ];
 
@@ -45,29 +49,42 @@ export default function Tools() {
       {/* گرید ابزارها */}
       <section className="max-w-6xl mx-auto px-4 py-10">
         <div className="grid md:grid-cols-2 gap-6">
-          {TOOLS.map((tool, i) => (
-            <Link key={i} href={tool.href}>
-              <div
-               className={`
+          {TOOLS.map((tool, i) => {
+            const isEnabled = tool.enabled;
+
+            const cardClasses = `
 rounded-2xl p-5 w-full md:w-[80%] mx-auto
-text-center shadow-md cursor-pointer
-transition-all duration-300 transform hover:scale-105
+text-center shadow-md
+transition-all duration-300 transform
 flex flex-col items-center justify-center
 min-h-[140px] md:min-h-[128px]
 ${tool.tone === "teal"
-? "bg-teal-500 hover:bg-teal-400"
-: "bg-yellow-400 hover:bg-yellow-300"}
-`}
-              >
-               <h2 className="text-base md:text-xl font-extrabold text-slate-800">
-  {tool.title}
-</h2>
-<p className="mt-1 text-slate-700 leading-6 h-12 overflow-hidden">
-  {tool.desc}
-</p>
+  ? "bg-teal-500 hover:bg-teal-400"
+  : "bg-yellow-400 hover:bg-yellow-300"}
+${isEnabled ? "cursor-pointer hover:scale-105" : "cursor-not-allowed opacity-60"}
+`;
+
+            const content = (
+              <div className={cardClasses}>
+                <h2 className="text-base md:text-xl font-extrabold text-slate-800">
+                  {tool.title}
+                </h2>
+                <p className="mt-1 text-slate-700 leading-6 h-12 overflow-hidden">
+                  {tool.desc}
+                </p>
               </div>
-            </Link>
-          ))}
+            );
+
+            return isEnabled ? (
+              <Link key={i} href={tool.href}>
+                {content}
+              </Link>
+            ) : (
+              <div key={i} aria-disabled="true">
+                {content}
+              </div>
+            );
+          })}
         </div>
       </section>
     </main>

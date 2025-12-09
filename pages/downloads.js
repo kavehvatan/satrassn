@@ -29,18 +29,25 @@ function useAlternatingBrandPair() {
 }
 
 // ✏️ این لیست را هر زمان با آیتم‌های جدید به‌روزرسانی کنید
-// فایل‌ها را داخل public/downloads/ بگذارید و مسیرشان را در فیلد `file` بنویسید.
 const DOWNLOADS = [
   {
-    title: "Unity OE 5.4.1",
+    title: "Unity OE",
     vendor: "Dell EMC",
-    version: "5.4.1",
+    version: "5.4.x",
     size: "2.1 GB",
     md5: "d41d8cd98f00b204e9800998ecf8427e",
-    file: "/downloads/unity-oe-5.4.1.iso",
-    notes: "آپدیت رسمی Unity OE. قبل از ارتقا، Release Notes را مطالعه کنید.",
+    file: "/downloads/unity-oe-5.4.x.iso",
+    notes: "آپدیت رسمی Unity OE برای استوریج‌های Unity XT. قبل از ارتقا، Release Notes را کامل مطالعه کنید.",
   },
-  // { title, vendor, version, size, md5, file, notes }
+  {
+    title: "PowerStoreOS",
+    vendor: "Dell EMC",
+    version: "3.x",
+    size: "3.4 GB",
+    md5: "00000000000000000000000000000000",
+    file: "/downloads/powerstore-os-3.x.iso",
+    notes: "ایمیج سیستم‌عامل PowerStore. حتماً قبل از ارتقا، سازگاری نسخه را با کد دستگاه و لایسنس بررسی کنید.",
+  },
 ];
 
 export default function DownloadsPage() {
@@ -57,38 +64,40 @@ export default function DownloadsPage() {
   };
 
   return (
-    <main className="font-sans">
-      {/* پدینگ پایینی کم شده تا فوتر خیلی پایین از دید خارج نشه */}
-      <section className="max-w-6xl mx-auto px-4 pt-10 pb-6">
-        <h1 className="text-3xl md:text-4xl font-extrabold mb-2">دانلودها</h1>
-        <p className="text-gray-600 mb-8">
-          فایل‌ها را داخل{" "}
-          <code className="mx-1 px-2 py-0.5 rounded bg-gray-100">
-            public/downloads/
-          </code>{" "}
-          قرار بده؛ متادیتا را هم همین‌جا در لیست پایین اضافه کن.
-        </p>
+    <main dir="rtl" className="min-h-screen bg-[#f8fafc] text-right font-sans">
+      {/* هدر تیره شبیه Calculator */}
+      <section className="bg-slate-900 text-white py-8 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide">
+            <span style={{ color: TEAL }}>دانلودها</span>
+          </h1>
+          <p className="text-slate-400 mt-2 text-sm md:text-base">
+            فایل‌ها، مستندات و ابزارهای قابل دانلود ساتراس
+          </p>
+        </div>
+      </section>
 
-        <div className="grid md:grid-cols-2 gap-6">
+      {/* محتوای اصلی دانلودها */}
+      <section className="max-w-6xl mx-auto px-4 pt-8 pb-6">
+        <h2 className="text-xl md:text-2xl font-bold mb-6">فهرست دانلودها</h2>
+
+        <div className="flex flex-col gap-4">
           {DOWNLOADS.map((d) => (
             <article
               key={d.title}
-              className="border bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+              dir="rtl"
+              className="w-full border bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
+              <div className="flex items-start justify-between gap-4" dir="ltr">
+                <div className="text-left">
                   <h2 className="text-xl font-bold text-gray-900">{d.title}</h2>
                   <div className="mt-1 text-sm text-gray-500">
-                    {d.vendor} • نسخه {d.version} • {d.size}
+                    {d.vendor} • Version {d.version} • {d.size}
                   </div>
                 </div>
               </div>
 
-              {d.notes && (
-                <p className="mt-3 text-gray-700 leading-7">{d.notes}</p>
-              )}
-
-              <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+              <div className="mt-4 flex flex-wrap items-center gap-3 text-sm" dir="ltr">
                 <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-700">
                   MD5
                 </span>
@@ -100,6 +109,12 @@ export default function DownloadsPage() {
                   کپی
                 </button>
               </div>
+
+              {d.notes && (
+                <p className="mt-4 text-gray-700 leading-7 text-right" dir="rtl">
+                  {d.notes}
+                </p>
+              )}
 
               <div className="mt-5">
                 <a

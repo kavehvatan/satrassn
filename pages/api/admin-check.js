@@ -1,5 +1,5 @@
-import withCsrf from '@/lib/withCsrf';
 // pages/api/admin-check.js
+
 function parseCookie(header = "") {
   return Object.fromEntries(
     header
@@ -10,12 +10,21 @@ function parseCookie(header = "") {
   );
 }
 
-async function handler handler(req, res) {
+export default async function handler(req, res) {
+  const authHeader = req.headers.authorization || "";
+  const bearer = authHeader.replace(/^Bearer\s+/i, "");
+
   const cookieHeader = req.headers.cookie || "";
   const cookies = parseCookie(cookieHeader);
-  const token = cookies["sat_admin"];
+  const cookieToken = cookies["sat_admin"];
 
-  const ok = Boolean(token && process.env.ADMIN_TOKEN && token === process.env.ADMIN_TOKEN);
-  return res.status(200).json({ ok });
+  const token = bearer || cookieToken || "";
+  const ok =
+    Boolean(token && process.env.ADMIN_TOKEN && token === process.env.ADMIN_TOKEN);
+
+  if (!ok) {
+    return res.status(401).json({ ok: false, error: "unauthorized" });
+  }
+
+  return res.status(200).json({ ok: true });
 }
-export default withCsrf(handler);

@@ -12,6 +12,7 @@ export default function Header() {
   const TEAL = "#14b8a6";
   const YELLOW = "#f4c21f";
   const [toolsColor, setToolsColor] = useState(TEAL);
+
   useEffect(() => {
     const id = setInterval(() => {
       setToolsColor((c) => (c === TEAL ? YELLOW : TEAL));
@@ -36,25 +37,24 @@ export default function Header() {
     { href: "/tools", label: "ابزارها" },
     { href: "/downloads", label: "دانلودها" },
     { href: "/warranty", label: "گارانتی" },
-    { href: "/news", label: "تازه‌ها" },      // ← جایگزین «درباره ما»
+    { href: "/news", label: "تازه‌ها" },
     { href: "/contact", label: "تماس با ما" },
   ];
 
   const isActive = (href) =>
-    href === "/"
-      ? router.pathname === "/"
-      : router.pathname.startsWith(href);
+    href === "/" ? router.pathname === "/" : router.pathname.startsWith(href);
 
   const itemClass =
     "px-1 py-1 rounded-md hover:text-brand-600 hover:opacity-90 transition";
-  const activeClass =
-    "text-brand-600 font-bold";
+  const activeClass = "text-brand-600 font-bold";
 
   return (
-    <header dir="rtl" className=" z-40 bg-white/85 backdrop-blur-md border-b border-black/5">
+    <header
+      dir="rtl"
+      className="z-40 bg-white/85 backdrop-blur-md border-b border-black/5 font-sans"
+    >
       <div className="max-w-screen-xl mx-auto px-4">
         <div className="h-16 flex items-center justify-between">
-
           {/* لوگو */}
           <div className="shrink-0 flex items-center">
             <Link href="/" aria-label="Satrass">
@@ -74,7 +74,9 @@ export default function Header() {
               <Link
                 key={n.href}
                 href={n.href}
-                className={`${itemClass} ${isActive(n.href) ? activeClass : ""}`}
+                className={`${itemClass} ${
+                  isActive(n.href) ? activeClass : ""
+                }`}
                 aria-current={isActive(n.href) ? "page" : undefined}
                 // فقط برای «ابزارها» رنگ متناوب اعمال شود
                 style={
@@ -96,7 +98,12 @@ export default function Header() {
             onClick={() => setOpen((v) => !v)}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+              <path
+                d="M4 6h16M4 12h16M4 18h16"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
             </svg>
           </button>
         </div>
@@ -110,7 +117,7 @@ export default function Header() {
             onClick={() => setOpen(false)}
           />
           <div className="fixed z-50 top-16 inset-x-3 md:hidden">
-            <div className="rounded-2xl border border-white/30 bg-white/95 shadow-2xl p-3 text-right">
+            <div className="rounded-2xl border border-white/30 bg-white/95 shadow-2xl p-3 text-right font-sans">
               <ul className="divide-y divide-black/5">
                 {nav.map((n) => (
                   <li key={n.href}>
@@ -118,12 +125,17 @@ export default function Header() {
                       href={n.href}
                       onClick={() => setOpen(false)}
                       className={`block px-3 py-3 rounded-xl hover:bg-black/5 transition ${
-                        isActive(n.href) ? "text-brand-600 font-bold" : "text-slate-900"
+                        isActive(n.href)
+                          ? "text-brand-600 font-bold"
+                          : "text-slate-900"
                       }`}
                       aria-current={isActive(n.href) ? "page" : undefined}
                       style={
                         n.href === "/tools"
-                          ? { color: toolsColor, transition: "color 300ms ease" }
+                          ? {
+                              color: toolsColor,
+                              transition: "color 300ms ease",
+                            }
                           : undefined
                       }
                     >
