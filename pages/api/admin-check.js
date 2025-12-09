@@ -1,29 +1,30 @@
 // pages/api/admin-check.js
 
-function parseCookie(header = "") {
-  return Object.fromEntries(
-    header
-      .split(";")
-      .map((v) => v.trim())
-      .filter(Boolean)
-      .map((v) => v.split("="))
-  );
-}
+export default function handler(req, res) {
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "method_not_allowed" });
+  }
 
-export default async function handler(req, res) {
+  // توکن رو از هدر می‌گیریم: یا Authorization: Bearer X یا X-Admin-Token
   const authHeader = req.headers.authorization || "";
-  const bearer = authHeader.replace(/^Bearer\s+/i, "");
+  let token = "";
 
-  const cookieHeader = req.headers.cookie || "";
-  const cookies = parseCookie(cookieHeader);
-  const cookieToken = cookies["sat_admin"];
+  if (authHeader.toLowerCase().startsWith("bearer ")) {
+    token = authHeader.slice(7).trim();
+  } else if (req.headers["x-admin-token"]) {
+    token = String(req.headers["x-admin-token"]);
+  }
 
-  const token = bearer || cookieToken || "";
-  const ok =
-    Boolean(token && process.env.ADMIN_TOKEN && token === process.env.ADMIN_TOKEN);
+  const expected = process.env.ADMIN_TOKEN;
 
-  if (!ok) {
-    return res.status(401).json({ ok: false, error: "unauthorized" });
+  if (!expected) {
+    return res
+      .status(500)
+      .json({ error: "admin_token_not_configured" });
+  }
+
+  if (token !== expected) {
+    return res.status(401).json({ error: "invalid_token" });
   }
 
   return res.status(200).json({ ok: true });
