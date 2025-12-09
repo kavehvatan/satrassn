@@ -145,9 +145,12 @@ function computeResiliency(driveCount, level) {
 
 function PowerStoreCalculator() {
   const [appliance, setAppliance] = useState("PowerStore 9200T");
-const [driveCount, setDriveCount] = useState(() =>
-  getDefaultDriveCount("PowerStore 9200T")
-);
+  const [driveId, setDriveId] = useState("nvme-3.84");
+  const [toleranceLevel, setToleranceLevel] = useState("double");
+  const [driveCount, setDriveCount] = useState(() =>
+    getDefaultDriveCount("PowerStore 9200T")
+  );
+}
   const [dataReduction, setDataReduction] = useState(3); // 3:1 typical
 
   const maxDrivesForModel = APPLIANCES[appliance];
