@@ -322,7 +322,7 @@ function PowerStoreCalculator() {
                 className="w-full"
               />
               <p className="mt-1 text-xs text-slate-500">
-                Typical values for PowerStore are around 3:1 – 4:1, but this is
+                Typical values for PowerStore are around 2:1 – 3:1, but this is
                 workload-dependent.
               </p>
             </div>
