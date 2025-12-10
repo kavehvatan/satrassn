@@ -64,11 +64,6 @@ const HDD35_OPTIONS = [
   { label: "D4 12TB NLSAS 15x3.5 drive", sku: "[400-BFVT]" },
 ];
 
-// اسلات‌های DPE
-const BASE_25_SLOTS = 25;
-const SYSPACK_SLOTS_ON_BASE = 4;
-const BASE_FREE_25_SLOTS = BASE_25_SLOTS - SYSPACK_SLOTS_ON_BASE; // 21
-
 // حداکثر درایوها بر اساس مدل
 function getDriveMaxByModel(modelId) {
   switch (modelId) {
@@ -158,8 +153,9 @@ export default function UnityConfiguratorPage() {
     () => oddListDown(getFastCacheMax(modelId)),
     [modelId]
   );
-  // پیش‌فرض کلی = ۳
-  const [fastCacheQty, setFastCacheQty] = useState(3);
+  const [fastCacheQty, setFastCacheQty] = useState(() =>
+    oddListDown(getFastCacheMax("880"))[0]
+  );
 
   const handleModelChange = (e) => {
     const newModelId = e.target.value;
@@ -168,16 +164,8 @@ export default function UnityConfiguratorPage() {
     setSsd25Qty(clamped.ssd);
     setHdd35Qty(clamped.hdd);
 
-    // Fast Cache: مقدار فعلی را اگر در لیست مجاز مدل جدید باشد نگه می‌داریم،
-    // در غیر این صورت روی حداکثر مجاز همان مدل clamp می‌کنیم.
-    const maxFast = getFastCacheMax(newModelId);
-    setFastCacheQty((prev) => {
-      const list = oddListDown(maxFast);
-      if (list.includes(prev)) return prev || 3;
-      if (prev && prev > maxFast) return list[0] ?? 3;
-      // اگر کمتر از کمترین مقدار لیست باشد، کوچک‌ترین مقدار لیست (معمولاً ۳) را بگیر
-      return list[list.length - 1] ?? 3;
-    });
+    const list = oddListDown(getFastCacheMax(newModelId));
+    setFastCacheQty(list[0] ?? 3);
   };
 
   const handleSsdChange = (e) => {
@@ -200,16 +188,7 @@ export default function UnityConfiguratorPage() {
   const ssd25Opt = SSD25_OPTIONS[ssd25Index] || SSD25_OPTIONS[0];
   const hdd35Opt = HDD35_OPTIONS[hdd35Index] || HDD35_OPTIONS[0];
 
-  // محاسبه تعداد DAEها
-  // Fast Cache ابتدا داخل ۲۱ اسلات آزاد DPE می‌نشیند؛ اگر بیشتر شد،
-  // مازاد Fast Cache روی DAEهای ۲۵تایی می‌رود.
-  const extraFastCache = Math.max(0, fastCacheQty - BASE_FREE_25_SLOTS);
-  const extraFastCacheDAE = Math.ceil(extraFastCache / 25);
-
-  const dae25Qty = Math.max(
-    1,
-    Math.ceil(ssd25Qty / 25) + extraFastCacheDAE
-  );
+  const dae25Qty = Math.max(1, Math.ceil(ssd25Qty / 25));
   const dae35Qty = Math.max(1, Math.ceil(hdd35Qty / 15));
 
   const buildExportRows = () => {
@@ -382,7 +361,7 @@ export default function UnityConfiguratorPage() {
     return rows;
   };
 
-  const handleExportExcel = () => {
+    const handleExportExcel = () => {
     const rows = buildExportRows();
 
     // هدر ستون‌ها مثل جدول صفحه
@@ -976,7 +955,7 @@ export default function UnityConfiguratorPage() {
                 </td>
               </tr>
 
-              {/* TLA (block 3) */}
+              {/* TLA (block 2) */}
               <tr>
                 <td className="border border-slate-200 px-4 py-2">TLA</td>
                 <td className="border border-slate-200 px-4 py-2">
