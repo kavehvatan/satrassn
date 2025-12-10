@@ -52,7 +52,7 @@ const POWERSTORE_OS_VERSIONS = [
     version: "4.3.0.0",
     build: "2611831",
     releaseDate: "2 Dec 2025",
-    notes: "",
+    notes: "نسخه جدید PowerStoreOS 4.3.0.0 (کد پیشنهادی فعلی).",
   },
   {
     id: "ps-4.2.0.1",
@@ -60,7 +60,7 @@ const POWERSTORE_OS_VERSIONS = [
     version: "4.2.0.1",
     build: "2594695",
     releaseDate: "28 Oct 2025",
-    notes: "",
+    notes: "آپدیت نگهداری (Maintenance) روی شاخه 4.2.",
   },
   {
     id: "ps-4.2.0.0-b2577950",
@@ -68,7 +68,7 @@ const POWERSTORE_OS_VERSIONS = [
     version: "4.2.0.0",
     build: "2577950",
     releaseDate: "-",
-    notes: "",
+    notes: "بیلد اولیه 4.2.0.0 (قبل از انتشار عمومی).",
   },
   {
     id: "ps-4.2.0.0-b2563584",
@@ -76,7 +76,7 @@ const POWERSTORE_OS_VERSIONS = [
     version: "4.2.0.0",
     build: "2563584",
     releaseDate: "3 Sep 2025",
-    notes: "",
+    notes: "PowerStoreOS 4.2.0.0 – بیلد عمومی.",
   },
 ];
 
@@ -86,24 +86,24 @@ const UNITY_OE_VERSIONS = [
     product: "Unity OE",
     version: "5.5.2.0.5.014",
     releaseDate: "Oct 29, 2025",
-    target: "Recommended code (Target)",
-    notes: "5.5 SP2",
+    target: "5.5 SP2",
+    notes: "کد پیشنهادی (Target) روی شاخه 5.5 – Service Pack 2.",
   },
   {
     id: "unity-5.5.1.0.5.025",
     product: "Unity OE",
     version: "5.5.1.0.5.025",
     releaseDate: "Jul 31, 2025",
-    target: "Recommended code (Target)",
-    notes: "5.5 SP1",
+    target: "5.5 SP1",
+    notes: "Service Pack 1 روی شاخه 5.5.",
   },
   {
     id: "unity-5.5.0.0.5.259",
     product: "Unity OE",
     version: "5.5.0.0.5.259",
     releaseDate: "Mar 26, 2025",
-    target: "Minor Release – See Note 3.",
-    notes: "",
+    target: "Minor Release",
+    notes: "ریلیز جزئی – مطابق Note 3 در داکیومنت رسمی.",
   },
   {
     id: "unity-5.4.1.0.5.006",
@@ -111,7 +111,7 @@ const UNITY_OE_VERSIONS = [
     version: "5.4.1.0.5.006",
     releaseDate: "Dec 12, 2024",
     target: "Jun 09, 2025 → present",
-    notes: "5.4 SP1 (Version shipping from Manufacturing)",
+    notes: "5.4 SP1 (کدی که از کارخانه روی دستگاه‌ها می‌آید).",
   },
 ];
 
@@ -173,13 +173,15 @@ export default function DownloadsPage() {
       phone,
     });
 
-    alert("درخواست شما ثبت شد ✅\nلینک دانلود برای شما ارسال خواهد شد.");
+    alert(
+      "درخواست شما ثبت شد ✅\nبه‌زودی برای هماهنگی و ارسال لینک دانلود با شما تماس می‌گیریم.",
+    );
 
     // اگر خواستی بعد از ثبت، فرم پاک شود:
     // setNameOrOrg("");
     // setPhone("");
 
-    swap(); // برای جابه‌جایی رنگ دکمه
+    swap(); // برای جابه‌جایی رنگ دکمه، مشابه صفحه اصلی
   };
 
   const activeVersion = currentProduct.versions.find(
@@ -196,7 +198,7 @@ export default function DownloadsPage() {
           </h1>
           <p className="text-slate-400 mt-2 text-sm md:text-base">
             انتخاب نسخهٔ مناسب PowerStoreOS و Unity OE و ثبت درخواست برای
-            دریافت لینک دانلود
+            دریافت لینک رسمی دانلود
           </p>
         </div>
       </section>
@@ -244,7 +246,7 @@ export default function DownloadsPage() {
           </h2>
           <p className="text-sm text-slate-600 mb-4">
             از لیست زیر نسخهٔ مورد نظر خود را انتخاب کنید. برای انتخاب نسخه
-            پیشنهادی، می‌توانید از ستون‌ها و توضیحات جدول کمک بگیرید.
+            پیشنهادشده، می‌توانید از ستون توضیحات کمک بگیرید.
           </p>
 
           {/* Select نسخه */}
@@ -288,11 +290,9 @@ export default function DownloadsPage() {
                         Recommended / Target
                       </th>
                     )}
-                    {activeVersion.notes && (
-                      <th className="px-3 py-2 text-right font-semibold">
-                        Notes
-                      </th>
-                    )}
+                    <th className="px-3 py-2 text-right font-semibold">
+                      Notes
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -313,11 +313,9 @@ export default function DownloadsPage() {
                         {activeVersion.target}
                       </td>
                     )}
-                    {activeVersion.notes && (
-                      <td className="px-3 py-2 border-t border-slate-200">
-                        {activeVersion.notes}
-                      </td>
-                    )}
+                    <td className="px-3 py-2 border-t border-slate-200">
+                      {activeVersion.notes}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -325,9 +323,9 @@ export default function DownloadsPage() {
           )}
 
           <p className="mt-3 text-[11px] md:text-xs text-slate-500 leading-relaxed">
-            * Data in this matrix is based on Dell official documentation.
-            Always review the Release Notes and compatibility information before
-            performing any upgrade.
+            * اطلاعات نسخه‌ها بر اساس مستندات رسمی Dell جمع‌آوری شده است. قبل
+            از اعمال هرگونه ارتقا، سازگاری نسخه با محیط و قرارداد پشتیبانی خود
+            را بررسی کنید.
           </p>
         </div>
 
@@ -337,29 +335,30 @@ export default function DownloadsPage() {
           className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6"
         >
           <h2 className="text-lg md:text-xl font-bold mb-2">
-            ۳. ثبت اطلاعات برای دریافت اتوماتیک لینک
+            ۳. ثبت اطلاعات برای دریافت لینک
           </h2>
           <p className="text-sm text-slate-600 mb-5">
-            پس از ثبت این فرم، لینک دانلود برای شما ارسال خواهد شد.
+            پس از ثبت درخواست، نسخه انتخاب‌شده بررسی شده و برای هماهنگی و ارسال
+            لینک رسمی دانلود با شما تماس می‌گیریم.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                نام  / سازمان
+                نام و نام خانوادگی / سازمان
               </label>
               <input
                 type="text"
                 value={nameOrOrg}
                 onChange={(e) => setNameOrOrg(e.target.value)}
-                placeholder="مثلاً: بابک باقری – شرکت ساتراس"
+                placeholder="مثلاً: علی رضایی – شرکت ساتراس"
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#14b8a6] focus:border-[#14b8a6] bg-white"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                شماره تماس برای دریافت لینک دانلود
+                شماره تماس برای هماهنگی
               </label>
               <input
                 type="tel"
@@ -372,9 +371,9 @@ export default function DownloadsPage() {
           </div>
 
           <p className="text-[11px] md:text-xs text-slate-500 mb-4 leading-relaxed">
-            * Data in this matrix is based on Dell official documentation.
-            Always review the Release Notes and compatibility information before
-            performing any upgrade.
+            * لینک‌ها از مسیرهای رسمی Dell و متناسب با سریال دستگاه و وضعیت
+            پشتیبانی شما ارائه می‌شوند. این فرم صرفاً جهت تسهیل انتخاب نسخه و
+            هماهنگی است.
           </p>
 
           <button
