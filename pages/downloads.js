@@ -214,7 +214,6 @@ export default function DownloadsPage() {
       }
 
       // موفق
-      alert("سرویس به زودی راه اندازی میگردد");
       setButtonLabel("سرویس به زودی راه اندازی میگردد");
     } catch (err) {
       console.error(err);
@@ -404,7 +403,7 @@ export default function DownloadsPage() {
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="مثلاً: 0912xxxxxxx"
+                placeholder="0912XXXXXXXX"
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#14b8a6] focus:border-[#14b8a6] bg-white"
               />
             </div>
