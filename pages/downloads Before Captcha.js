@@ -130,13 +130,6 @@ const PRODUCTS = {
   },
 };
 
-// تولید سوال کپچا (جمع دو عدد ساده)
-function generateCaptcha() {
-  const a = Math.floor(Math.random() * 8) + 2; // 2..9
-  const b = Math.floor(Math.random() * 8) + 1; // 1..8
-  return { a, b, answer: a + b };
-}
-
 /* ======================= صفحه دانلود / درخواست Firmware ======================= */
 
 export default function DownloadsPage() {
@@ -153,32 +146,16 @@ export default function DownloadsPage() {
   const [nameOrOrg, setNameOrOrg] = useState("");
   const [phone, setPhone] = useState("");
 
-  // captcha state
-  const [captcha, setCaptcha] = useState(() => generateCaptcha());
-  const [captchaInput, setCaptchaInput] = useState("");
-
   useEffect(() => {
     // وقتی محصول عوض می‌شود، نسخه پیش‌فرض همان محصول را انتخاب کن
     setSelectedVersionId(PRODUCTS[productKey].versions[0].id);
   }, [productKey]);
-
-  const refreshCaptcha = () => {
-    setCaptcha(generateCaptcha());
-    setCaptchaInput("");
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!nameOrOrg.trim() || !phone.trim()) {
       alert("لطفاً نام/سازمان و شماره تماس را وارد کنید.");
-      return;
-    }
-
-    // چک کردن کپچا
-    if (Number(captchaInput) !== captcha.answer) {
-      alert("پاسخ سوال امنیتی اشتباه است. لطفاً دوباره تلاش کنید.");
-      refreshCaptcha();
       return;
     }
 
@@ -201,11 +178,8 @@ export default function DownloadsPage() {
     // اگر خواستی بعد از ثبت، فرم پاک شود:
     // setNameOrOrg("");
     // setPhone("");
-    // setCaptchaInput("");
-    // refreshCaptcha();
 
     swap(); // برای جابه‌جایی رنگ دکمه
-    refreshCaptcha();
   };
 
   const activeVersion = currentProduct.versions.find(
@@ -372,7 +346,7 @@ export default function DownloadsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                نام و نام خانوادگی / سازمان
+                نام  / سازمان
               </label>
               <input
                 type="text"
@@ -385,43 +359,23 @@ export default function DownloadsPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                شماره تماس برای دریافت لینک دانلود 
+                شماره تماس برای دریافت لینک دانلود
               </label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="مثلاً: 0912"
+                placeholder="مثلاً: 0912xxxxxxx یا تلفن ثابت"
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#14b8a6] focus:border-[#14b8a6] bg-white"
               />
             </div>
           </div>
 
-          {/* سوال امنیتی (کپچا ساده) */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              سوال امنیتی (برای جلوگیری از ارسال خودکار)
-            </label>
-            <div className="flex flex-wrap items-center gap-3 text-sm">
-              <span className="px-3 py-2 bg-slate-100 rounded-lg">
-                {captcha.a} + {captcha.b} = ؟
-              </span>
-              <input
-                type="number"
-                value={captchaInput}
-                onChange={(e) => setCaptchaInput(e.target.value)}
-                className="w-32 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#14b8a6] focus:border-[#14b8a6] bg-white"
-                placeholder="پاسخ"
-              />
-              <button
-                type="button"
-                onClick={refreshCaptcha}
-                className="px-3 py-2 rounded-full border border-slate-300 text-slate-700 text-xs hover:bg-slate-100 transition"
-              >
-                سوال جدید
-              </button>
-            </div>
-          </div>
+          <p className="text-[11px] md:text-xs text-slate-500 mb-4 leading-relaxed">
+            * Data in this matrix is based on Dell official documentation.
+            Always review the Release Notes and compatibility information before
+            performing any upgrade.
+          </p>
 
           <button
             type="submit"
