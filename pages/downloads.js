@@ -102,7 +102,7 @@ const UNITY_OE_VERSIONS = [
     product: "Unity OE",
     version: "5.5.0.0.5.259",
     releaseDate: "Mar 26, 2025",
-    target: "Minor Release – See Note 3",
+    target: "Minor Release ",
     notes: "",
   },
   {
@@ -157,7 +157,9 @@ export default function DownloadsPage() {
   const [captcha, setCaptcha] = useState(() => generateCaptcha());
   const [captchaInput, setCaptchaInput] = useState("");
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // وضعیت دکمه
+  const [buttonLabel, setButtonLabel] = useState("ثبت درخواست دریافت لینک");
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   useEffect(() => {
     // وقتی محصول عوض می‌شود، نسخه پیش‌فرض همان محصول را انتخاب کن
@@ -188,41 +190,40 @@ export default function DownloadsPage() {
       (v) => v.id === selectedVersionId,
     );
 
-    setIsSubmitting(true);
+    const payload = {
+      product: currentProduct.label,
+      version: versionObj?.version || "",
+      build: versionObj?.build || "",
+      target: versionObj?.target || "",
+      nameOrOrg,
+      phone,
+    };
 
     try {
+      setButtonDisabled(true);
+      setButtonLabel("در حال ثبت...");
+
       const res = await fetch("/api/firmware-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product: currentProduct.label,
-          version: versionObj?.version,
-          build: versionObj?.build || "",
-          target: versionObj?.target || "",
-          nameOrOrg,
-          phone,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
         throw new Error("Request failed");
       }
 
-      alert(
-        "درخواست شما ثبت شد ✅\nبه زودی لینک دانلود برای شما ارسال خواهد شد.",
-      );
-
-      // اگر خواستی فرم بعد از ثبت خالی شود:
-      setNameOrOrg("");
-      setPhone("");
-      setCaptchaInput("");
-      refreshCaptcha();
-      swap(); // برای جابه‌جایی رنگ دکمه
+      // موفق
+      alert("سرویس به زودی راه اندازی میگردد");
+      setButtonLabel("سرویس به زودی راه اندازی میگردد");
     } catch (err) {
       console.error(err);
       alert("در ثبت درخواست مشکلی پیش آمد. لطفاً دوباره تلاش کنید.");
+      setButtonDisabled(false);
+      setButtonLabel("ثبت درخواست دریافت لینک");
     } finally {
-      setIsSubmitting(false);
+      swap(); // برای جابه‌جایی رنگ دکمه
+      refreshCaptcha();
     }
   };
 
@@ -313,29 +314,23 @@ export default function DownloadsPage() {
           {/* جزئیات نسخه انتخاب‌شده */}
           {activeVersion && (
             <div className="overflow-x-auto mt-2" dir="ltr">
-              <table className="min-w-full text-xs md:text-sm border border-slate-200 rounded-lg overflow-hidden">
+              <table className="min-w-full text-xs md:text-sm border border-slate-200 rounded-lg overflow-hidden text-center">
                 <thead>
                   <tr className="bg-[#0f4fa8] text-white">
-                    <th className="px-3 py-2 text-left font-semibold">
+                    <th className="px-3 py-2 font-semibold">
                       {currentProduct.label}
                     </th>
                     {activeVersion.build && (
-                      <th className="px-3 py-2 text-left font-semibold">
-                        Build
-                      </th>
+                      <th className="px-3 py-2 font-semibold">Build</th>
                     )}
-                    <th className="px-3 py-2 text-left font-semibold">
-                      Release Date
-                    </th>
+                    <th className="px-3 py-2 font-semibold">Release Date</th>
                     {activeVersion.target && (
-                      <th className="px-3 py-2 text-left font-semibold">
+                      <th className="px-3 py-2 font-semibold">
                         Recommended / Target
                       </th>
                     )}
                     {activeVersion.notes && (
-                      <th className="px-3 py-2 text-left font-semibold">
-                        Notes
-                      </th>
+                      <th className="px-3 py-2 font-semibold">Notes</th>
                     )}
                   </tr>
                 </thead>
@@ -369,7 +364,9 @@ export default function DownloadsPage() {
           )}
 
           <p className="mt-3 text-[11px] md:text-xs text-slate-500 leading-relaxed">
-            * تمامی نسخ از سایت رسمی DELL دانلود شده است.
+            * اطلاعات نسخه‌ها بر اساس مستندات رسمی Dell جمع‌آوری شده است. قبل
+            از اعمال هرگونه ارتقا، سازگاری نسخه با محیط و قرارداد پشتیبانی خود
+            را بررسی کنید.
           </p>
         </div>
 
@@ -388,7 +385,7 @@ export default function DownloadsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                نام  / سازمان
+                نام و نام خانوادگی / سازمان
               </label>
               <input
                 type="text"
@@ -407,7 +404,7 @@ export default function DownloadsPage() {
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="0912XXXXXXX"
+                placeholder="مثلاً: 0912xxxxxxx"
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#14b8a6] focus:border-[#14b8a6] bg-white"
               />
             </div>
@@ -416,7 +413,7 @@ export default function DownloadsPage() {
           {/* سوال امنیتی (کپچا ساده) */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              سوال امنیتی 
+              سوال امنیتی (برای جلوگیری از ارسال خودکار)
             </label>
             <div className="flex flex-wrap items-center gap-3 text-sm">
               <span className="px-3 py-2 bg-slate-100 rounded-lg">
@@ -441,9 +438,9 @@ export default function DownloadsPage() {
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={buttonDisabled}
             className={`rounded-full px-6 py-2.5 text-sm md:text-base font-bold transition inline-flex items-center justify-center ${
-              isSubmitting ? "opacity-70 cursor-wait" : ""
+              buttonDisabled ? "opacity-60 cursor-not-allowed" : ""
             }`}
             style={{
               backgroundColor: primary,
@@ -451,7 +448,7 @@ export default function DownloadsPage() {
               border: `1px solid ${secondary}`,
             }}
           >
-            {isSubmitting ? "در حال ثبت..." : "ثبت درخواست دریافت لینک"}
+            {buttonLabel}
           </button>
         </form>
       </section>
