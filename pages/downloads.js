@@ -102,7 +102,7 @@ const UNITY_OE_VERSIONS = [
     product: "Unity OE",
     version: "5.5.0.0.5.259",
     releaseDate: "Mar 26, 2025",
-    target: "Minor Release – See Note 3.",
+    target: "Minor Release – See Note 3",
     notes: "",
   },
   {
@@ -157,6 +157,8 @@ export default function DownloadsPage() {
   const [captcha, setCaptcha] = useState(() => generateCaptcha());
   const [captchaInput, setCaptchaInput] = useState("");
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     // وقتی محصول عوض می‌شود، نسخه پیش‌فرض همان محصول را انتخاب کن
     setSelectedVersionId(PRODUCTS[productKey].versions[0].id);
@@ -167,7 +169,7 @@ export default function DownloadsPage() {
     setCaptchaInput("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!nameOrOrg.trim() || !phone.trim()) {
@@ -186,26 +188,42 @@ export default function DownloadsPage() {
       (v) => v.id === selectedVersionId,
     );
 
-    // اینجا بعداً می‌تونی به /api/firmware-request POST بزنی
-    console.log("Firmware request:", {
-      product: currentProduct.label,
-      version: versionObj?.version,
-      build: versionObj?.build,
-      target: versionObj?.target,
-      nameOrOrg,
-      phone,
-    });
+    setIsSubmitting(true);
 
-    alert("درخواست شما ثبت شد ✅\nلینک دانلود برای شما ارسال خواهد شد.");
+    try {
+      const res = await fetch("/api/firmware-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product: currentProduct.label,
+          version: versionObj?.version,
+          build: versionObj?.build || "",
+          target: versionObj?.target || "",
+          nameOrOrg,
+          phone,
+        }),
+      });
 
-    // اگر خواستی بعد از ثبت، فرم پاک شود:
-    // setNameOrOrg("");
-    // setPhone("");
-    // setCaptchaInput("");
-    // refreshCaptcha();
+      if (!res.ok) {
+        throw new Error("Request failed");
+      }
 
-    swap(); // برای جابه‌جایی رنگ دکمه
-    refreshCaptcha();
+      alert(
+        "درخواست شما ثبت شد ✅\nبه زودی لینک دانلود برای شما ارسال خواهد شد.",
+      );
+
+      // اگر خواستی فرم بعد از ثبت خالی شود:
+      setNameOrOrg("");
+      setPhone("");
+      setCaptchaInput("");
+      refreshCaptcha();
+      swap(); // برای جابه‌جایی رنگ دکمه
+    } catch (err) {
+      console.error(err);
+      alert("در ثبت درخواست مشکلی پیش آمد. لطفاً دوباره تلاش کنید.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const activeVersion = currentProduct.versions.find(
@@ -294,28 +312,28 @@ export default function DownloadsPage() {
 
           {/* جزئیات نسخه انتخاب‌شده */}
           {activeVersion && (
-            <div className="overflow-x-auto mt-2">
+            <div className="overflow-x-auto mt-2" dir="ltr">
               <table className="min-w-full text-xs md:text-sm border border-slate-200 rounded-lg overflow-hidden">
                 <thead>
                   <tr className="bg-[#0f4fa8] text-white">
-                    <th className="px-3 py-2 text-right font-semibold">
+                    <th className="px-3 py-2 text-left font-semibold">
                       {currentProduct.label}
                     </th>
                     {activeVersion.build && (
-                      <th className="px-3 py-2 text-right font-semibold">
+                      <th className="px-3 py-2 text-left font-semibold">
                         Build
                       </th>
                     )}
-                    <th className="px-3 py-2 text-right font-semibold">
+                    <th className="px-3 py-2 text-left font-semibold">
                       Release Date
                     </th>
                     {activeVersion.target && (
-                      <th className="px-3 py-2 text-right font-semibold">
+                      <th className="px-3 py-2 text-left font-semibold">
                         Recommended / Target
                       </th>
                     )}
                     {activeVersion.notes && (
-                      <th className="px-3 py-2 text-right font-semibold">
+                      <th className="px-3 py-2 text-left font-semibold">
                         Notes
                       </th>
                     )}
@@ -351,9 +369,7 @@ export default function DownloadsPage() {
           )}
 
           <p className="mt-3 text-[11px] md:text-xs text-slate-500 leading-relaxed">
-            * Data in this matrix is based on Dell official documentation.
-            Always review the Release Notes and compatibility information before
-            performing any upgrade.
+            * تمامی نسخ از سایت رسمی DELL دانلود شده است.
           </p>
         </div>
 
@@ -372,7 +388,7 @@ export default function DownloadsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                نام و نام خانوادگی / سازمان
+                نام  / سازمان
               </label>
               <input
                 type="text"
@@ -385,13 +401,13 @@ export default function DownloadsPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                شماره تماس برای دریافت لینک دانلود 
+                شماره تماس برای دریافت لینک دانلود
               </label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="مثلاً: 0912"
+                placeholder="0912XXXXXXX"
                 className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#14b8a6] focus:border-[#14b8a6] bg-white"
               />
             </div>
@@ -400,7 +416,7 @@ export default function DownloadsPage() {
           {/* سوال امنیتی (کپچا ساده) */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              سوال امنیتی (برای جلوگیری از ارسال خودکار)
+              سوال امنیتی 
             </label>
             <div className="flex flex-wrap items-center gap-3 text-sm">
               <span className="px-3 py-2 bg-slate-100 rounded-lg">
@@ -425,14 +441,17 @@ export default function DownloadsPage() {
 
           <button
             type="submit"
-            className="rounded-full px-6 py-2.5 text-sm md:text-base font-bold transition inline-flex items-center justify-center"
+            disabled={isSubmitting}
+            className={`rounded-full px-6 py-2.5 text-sm md:text-base font-bold transition inline-flex items-center justify-center ${
+              isSubmitting ? "opacity-70 cursor-wait" : ""
+            }`}
             style={{
               backgroundColor: primary,
               color: primaryIsYellow ? "#000" : "#fff",
               border: `1px solid ${secondary}`,
             }}
           >
-            ثبت درخواست دریافت لینک
+            {isSubmitting ? "در حال ثبت..." : "ثبت درخواست دریافت لینک"}
           </button>
         </form>
       </section>
