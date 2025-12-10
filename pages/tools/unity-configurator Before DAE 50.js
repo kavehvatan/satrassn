@@ -64,9 +64,10 @@ const HDD35_OPTIONS = [
   { label: "D4 12TB NLSAS 15x3.5 drive", sku: "[400-BFVT]" },
 ];
 
-// اسلات‌ها / دیسک‌های ۲.۵ اینچ روی DPE
+// اسلات‌های DPE
 const BASE_25_SLOTS = 25;
-const SYSPACK_DRIVES = 4; // 4x2.5" SYSPACK روی خود DPE
+const SYSPACK_SLOTS_ON_BASE = 4;
+const BASE_FREE_25_SLOTS = BASE_25_SLOTS - SYSPACK_SLOTS_ON_BASE; // 21
 
 // حداکثر درایوها بر اساس مدل
 function getDriveMaxByModel(modelId) {
@@ -157,7 +158,7 @@ export default function UnityConfiguratorPage() {
     () => oddListDown(getFastCacheMax(modelId)),
     [modelId]
   );
-  // پیش‌فرض کلی Fast Cache = ۳
+  // پیش‌فرض کلی = ۳
   const [fastCacheQty, setFastCacheQty] = useState(3);
 
   const handleModelChange = (e) => {
@@ -167,12 +168,14 @@ export default function UnityConfiguratorPage() {
     setSsd25Qty(clamped.ssd);
     setHdd35Qty(clamped.hdd);
 
-    // Fast Cache را داخل بازه مدل جدید نگه می‌داریم
+    // Fast Cache: مقدار فعلی را اگر در لیست مجاز مدل جدید باشد نگه می‌داریم،
+    // در غیر این صورت روی حداکثر مجاز همان مدل clamp می‌کنیم.
     const maxFast = getFastCacheMax(newModelId);
     setFastCacheQty((prev) => {
       const list = oddListDown(maxFast);
       if (list.includes(prev)) return prev || 3;
       if (prev && prev > maxFast) return list[0] ?? 3;
+      // اگر کمتر از کمترین مقدار لیست باشد، کوچک‌ترین مقدار لیست (معمولاً ۳) را بگیر
       return list[list.length - 1] ?? 3;
     });
   };
@@ -197,20 +200,16 @@ export default function UnityConfiguratorPage() {
   const ssd25Opt = SSD25_OPTIONS[ssd25Index] || SSD25_OPTIONS[0];
   const hdd35Opt = HDD35_OPTIONS[hdd35Index] || HDD35_OPTIONS[0];
 
-  // ---------- محاسبه DAEها ----------
-  // مجموع واقعی دیسک‌های ۲.۵ اینچ:
-  // 4 تا SYSPACK + Fast Cache + 2.5" data
-  const total25Drives = SYSPACK_DRIVES + fastCacheQty + ssd25Qty;
+  // محاسبه تعداد DAEها
+  // Fast Cache ابتدا داخل ۲۱ اسلات آزاد DPE می‌نشیند؛ اگر بیشتر شد،
+  // مازاد Fast Cache روی DAEهای ۲۵تایی می‌رود.
+  const extraFastCache = Math.max(0, fastCacheQty - BASE_FREE_25_SLOTS);
+  const extraFastCacheDAE = Math.ceil(extraFastCache / 25);
 
-  // تعداد شلف‌های ۲۵تایی لازم (DPE + DAEها)
-  const total25Shelves = Math.ceil(total25Drives / BASE_25_SLOTS);
-
-  // DAEهای ۲۵تایی:
-  //  - یک شلف DPE داریم (از total25Shelves کم می‌کنیم)
-  //  - حداقل ۱ ASLF همیشه وجود دارد
-  const dae25Qty = Math.max(1, total25Shelves - 1);
-
-  // ۳.۵ اینچی مثل قبل
+  const dae25Qty = Math.max(
+    1,
+    Math.ceil(ssd25Qty / 25) + extraFastCacheDAE
+  );
   const dae35Qty = Math.max(1, Math.ceil(hdd35Qty / 15));
 
   const buildExportRows = () => {
@@ -419,7 +418,7 @@ export default function UnityConfiguratorPage() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "unity_config_full.xls";
+    a.download = "unity_config_full.xls"; // شبیه PowerStore
     document.body.appendChild(a);
     a.click();
     a.remove();
