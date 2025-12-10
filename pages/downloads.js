@@ -6,134 +6,388 @@ const YELLOW = "#f4c21f";
 
 // جابه‌جایی نوبتی رنگ دکمه‌ها (مشابه صفحهٔ اول)
 function useAlternatingBrandPair() {
-  const [primary, setPrimary] = useState(YELLOW);   // Filled
+  const [primary, setPrimary] = useState(YELLOW); // Filled
   const [secondary, setSecondary] = useState(TEAL); // Outlined
+
   useEffect(() => {
     try {
       const last = localStorage.getItem("satrass_btn_pair") === "1";
       const next = !last;
       localStorage.setItem("satrass_btn_pair", next ? "1" : "0");
-      if (next) { setPrimary(TEAL); setSecondary(YELLOW); }
-      else { setPrimary(YELLOW); setSecondary(TEAL); }
-    } catch {}
+      if (next) {
+        setPrimary(TEAL);
+        setSecondary(YELLOW);
+      } else {
+        setPrimary(YELLOW);
+        setSecondary(TEAL);
+      }
+    } catch {
+      // ignore
+    }
   }, []);
+
   const swap = () => {
     setPrimary((p) => {
       const np = p === TEAL ? YELLOW : TEAL;
-      setSecondary(np === TEAL ? YELLOW : TEAL);
-      try { localStorage.setItem("satrass_btn_pair", np === TEAL ? "1" : "0"); } catch {}
+      const ns = np === TEAL ? YELLOW : TEAL;
+      setSecondary(ns);
+      try {
+        localStorage.setItem("satrass_btn_pair", np === TEAL ? "1" : "0");
+      } catch {
+        // ignore
+      }
       return np;
     });
   };
+
   return { primary, secondary, swap };
 }
 
-// ✏️ این لیست را هر زمان با آیتم‌های جدید به‌روزرسانی کنید
-const DOWNLOADS = [
+/* ======================= داده‌های نسخه‌ها ======================= */
+
+const POWERSTORE_OS_VERSIONS = [
   {
-    title: "Unity OE",
-    vendor: "Dell EMC",
-    version: "5.4.x",
-    size: "2.1 GB",
-    md5: "d41d8cd98f00b204e9800998ecf8427e",
-    file: "/downloads/unity-oe-5.4.x.iso",
-    notes: "آپدیت رسمی Unity OE برای استوریج‌های Unity XT. قبل از ارتقا، Release Notes را کامل مطالعه کنید.",
+    id: "ps-4.3.0.0",
+    product: "PowerStoreOS",
+    version: "4.3.0.0",
+    build: "2611831",
+    releaseDate: "2 Dec 2025",
+    notes: "نسخه جدید PowerStoreOS 4.3.0.0 (کد پیشنهادی فعلی).",
   },
   {
-    title: "PowerStoreOS",
-    vendor: "Dell EMC",
-    version: "3.x",
-    size: "3.4 GB",
-    md5: "00000000000000000000000000000000",
-    file: "/downloads/powerstore-os-3.x.iso",
-    notes: "ایمیج سیستم‌عامل PowerStore. حتماً قبل از ارتقا، سازگاری نسخه را با کد دستگاه و لایسنس بررسی کنید.",
+    id: "ps-4.2.0.1",
+    product: "PowerStoreOS",
+    version: "4.2.0.1",
+    build: "2594695",
+    releaseDate: "28 Oct 2025",
+    notes: "آپدیت نگهداری (Maintenance) روی شاخه 4.2.",
+  },
+  {
+    id: "ps-4.2.0.0-b2577950",
+    product: "PowerStoreOS",
+    version: "4.2.0.0",
+    build: "2577950",
+    releaseDate: "-",
+    notes: "بیلد اولیه 4.2.0.0 (قبل از انتشار عمومی).",
+  },
+  {
+    id: "ps-4.2.0.0-b2563584",
+    product: "PowerStoreOS",
+    version: "4.2.0.0",
+    build: "2563584",
+    releaseDate: "3 Sep 2025",
+    notes: "PowerStoreOS 4.2.0.0 – بیلد عمومی.",
   },
 ];
+
+const UNITY_OE_VERSIONS = [
+  {
+    id: "unity-5.5.2.0.5.014",
+    product: "Unity OE",
+    version: "5.5.2.0.5.014",
+    releaseDate: "Oct 29, 2025",
+    target: "5.5 SP2",
+    notes: "کد پیشنهادی (Target) روی شاخه 5.5 – Service Pack 2.",
+  },
+  {
+    id: "unity-5.5.1.0.5.025",
+    product: "Unity OE",
+    version: "5.5.1.0.5.025",
+    releaseDate: "Jul 31, 2025",
+    target: "5.5 SP1",
+    notes: "Service Pack 1 روی شاخه 5.5.",
+  },
+  {
+    id: "unity-5.5.0.0.5.259",
+    product: "Unity OE",
+    version: "5.5.0.0.5.259",
+    releaseDate: "Mar 26, 2025",
+    target: "Minor Release",
+    notes: "ریلیز جزئی – مطابق Note 3 در داکیومنت رسمی.",
+  },
+  {
+    id: "unity-5.4.1.0.5.006",
+    product: "Unity OE",
+    version: "5.4.1.0.5.006",
+    releaseDate: "Dec 12, 2024",
+    target: "Jun 09, 2025 → present",
+    notes: "5.4 SP1 (کدی که از کارخانه روی دستگاه‌ها می‌آید).",
+  },
+];
+
+const PRODUCTS = {
+  powerstore: {
+    key: "powerstore",
+    label: "PowerStoreOS",
+    subtitle: "انتخاب نسخه سیستم‌عامل PowerStore",
+    versions: POWERSTORE_OS_VERSIONS,
+  },
+  unity: {
+    key: "unity",
+    label: "Unity OE",
+    subtitle: "انتخاب نسخه Unity OE برای Unity XT",
+    versions: UNITY_OE_VERSIONS,
+  },
+};
+
+/* ======================= صفحه دانلود / درخواست Firmware ======================= */
 
 export default function DownloadsPage() {
   const { primary, secondary, swap } = useAlternatingBrandPair();
   const primaryIsYellow = primary === YELLOW;
 
-  const copy = async (txt) => {
-    try {
-      await navigator.clipboard.writeText(txt);
-      alert("کپی شد ✅");
-    } catch {
-      alert(txt);
+  const [productKey, setProductKey] = useState("powerstore");
+
+  const currentProduct = PRODUCTS[productKey];
+  const [selectedVersionId, setSelectedVersionId] = useState(
+    currentProduct.versions[0].id,
+  );
+
+  const [nameOrOrg, setNameOrOrg] = useState("");
+  const [phone, setPhone] = useState("");
+
+  useEffect(() => {
+    // وقتی محصول عوض می‌شود، نسخه پیش‌فرض همان محصول را انتخاب کن
+    setSelectedVersionId(PRODUCTS[productKey].versions[0].id);
+  }, [productKey]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!nameOrOrg.trim() || !phone.trim()) {
+      alert("لطفاً نام/سازمان و شماره تماس را وارد کنید.");
+      return;
     }
+
+    const versionObj = currentProduct.versions.find(
+      (v) => v.id === selectedVersionId,
+    );
+
+    // اینجا بعداً می‌تونی به /api/firmware-request POST بزنی
+    console.log("Firmware request:", {
+      product: currentProduct.label,
+      version: versionObj?.version,
+      build: versionObj?.build,
+      target: versionObj?.target,
+      nameOrOrg,
+      phone,
+    });
+
+    alert(
+      "درخواست شما ثبت شد ✅\nبه‌زودی برای هماهنگی و ارسال لینک دانلود با شما تماس می‌گیریم.",
+    );
+
+    // اگر خواستی بعد از ثبت، فرم پاک شود:
+    // setNameOrOrg("");
+    // setPhone("");
+
+    swap(); // برای جابه‌جایی رنگ دکمه، مشابه صفحه اصلی
   };
+
+  const activeVersion = currentProduct.versions.find(
+    (v) => v.id === selectedVersionId,
+  );
 
   return (
     <main dir="rtl" className="min-h-screen bg-[#f8fafc] text-right font-sans">
-      {/* هدر تیره شبیه Calculator */}
+      {/* هدر تیره مشابه ابزارها */}
       <section className="bg-slate-900 text-white py-8 shadow-md">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide">
-            <span style={{ color: TEAL }}>دانلودها</span>
+            <span style={{ color: TEAL }}>درخواست Firmware / OS</span>
           </h1>
           <p className="text-slate-400 mt-2 text-sm md:text-base">
-            فایل‌ها، مستندات و ابزارهای قابل دانلود ساتراس
+            انتخاب نسخهٔ مناسب PowerStoreOS و Unity OE و ثبت درخواست برای
+            دریافت لینک رسمی دانلود
           </p>
         </div>
       </section>
 
-      {/* محتوای اصلی دانلودها */}
-      <section className="max-w-6xl mx-auto px-4 pt-8 pb-6">
-        <h2 className="text-xl md:text-2xl font-bold mb-6">فهرست دانلودها</h2>
-
-        <div className="flex flex-col gap-4">
-          {DOWNLOADS.map((d) => (
-            <article
-              key={d.title}
-              dir="rtl"
-              className="w-full border bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition"
-            >
-              <div className="flex items-start justify-between gap-4" dir="ltr">
-                <div className="text-left">
-                  <h2 className="text-xl font-bold text-gray-900">{d.title}</h2>
-                  <div className="mt-1 text-sm text-gray-500">
-                    {d.vendor} • Version {d.version} • {d.size}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 flex flex-wrap items-center gap-3 text-sm" dir="ltr">
-                <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-700">
-                  MD5
-                </span>
-                <code className="select-all text-gray-800">{d.md5}</code>
+      {/* محتوای اصلی */}
+      <section className="max-w-5xl mx-auto px-4 pt-8 pb-10">
+        {/* انتخاب محصول */}
+        <div className="flex flex-col gap-4 mb-6">
+          <h2 className="text-xl md:text-2xl font-bold mb-1">
+            ۱. انتخاب محصول
+          </h2>
+          <p className="text-sm text-slate-600">
+            ابتدا مشخص کنید برای کدام محصول قصد دریافت Firmware / OS دارید:
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {Object.values(PRODUCTS).map((p) => {
+              const active = p.key === productKey;
+              return (
                 <button
-                  onClick={() => copy(d.md5)}
-                  className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 transition"
+                  key={p.key}
+                  type="button"
+                  onClick={() => setProductKey(p.key)}
+                  className={`px-4 py-2 rounded-full text-sm md:text-base font-bold border transition ${
+                    active
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                  style={
+                    active
+                      ? { borderColor: TEAL }
+                      : { borderColor: "rgba(148,163,184,0.6)" }
+                  }
                 >
-                  کپی
+                  {p.label}
                 </button>
-              </div>
-
-              {d.notes && (
-                <p className="mt-4 text-gray-700 leading-7 text-right" dir="rtl">
-                  {d.notes}
-                </p>
-              )}
-
-              <div className="mt-5">
-                <a
-                  href={d.file}
-                  onClick={swap}
-                  className="rounded-full px-5 py-2.5 font-bold transition inline-block"
-                  style={{
-                    backgroundColor: primary,
-                    color: primaryIsYellow ? "#000" : "#fff",
-                    border: `1px solid ${secondary}`,
-                  }}
-                  download
-                >
-                  دانلود
-                </a>
-              </div>
-            </article>
-          ))}
+              );
+            })}
+          </div>
         </div>
+
+        {/* انتخاب نسخه */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+          <h2 className="text-lg md:text-xl font-bold mb-2">
+            ۲. {currentProduct.subtitle}
+          </h2>
+          <p className="text-sm text-slate-600 mb-4">
+            از لیست زیر نسخهٔ مورد نظر خود را انتخاب کنید. برای انتخاب نسخه
+            پیشنهادشده، می‌توانید از ستون توضیحات کمک بگیرید.
+          </p>
+
+          {/* Select نسخه */}
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              انتخاب نسخه
+            </label>
+            <select
+              value={selectedVersionId}
+              onChange={(e) => setSelectedVersionId(e.target.value)}
+              className="w-full md:w-80 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#14b8a6] focus:border-[#14b8a6] bg-white"
+            >
+              {currentProduct.versions.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {currentProduct.label} {v.version}
+                  {v.build ? `  (Build ${v.build})` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* جزئیات نسخه انتخاب‌شده */}
+          {activeVersion && (
+            <div className="overflow-x-auto mt-2">
+              <table className="min-w-full text-xs md:text-sm border border-slate-200 rounded-lg overflow-hidden">
+                <thead>
+                  <tr className="bg-[#0f4fa8] text-white">
+                    <th className="px-3 py-2 text-right font-semibold">
+                      {currentProduct.label}
+                    </th>
+                    {activeVersion.build && (
+                      <th className="px-3 py-2 text-right font-semibold">
+                        Build
+                      </th>
+                    )}
+                    <th className="px-3 py-2 text-right font-semibold">
+                      Release Date
+                    </th>
+                    {activeVersion.target && (
+                      <th className="px-3 py-2 text-right font-semibold">
+                        Recommended / Target
+                      </th>
+                    )}
+                    <th className="px-3 py-2 text-right font-semibold">
+                      Notes
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="bg-white text-slate-800">
+                    <td className="px-3 py-2 border-t border-slate-200">
+                      {activeVersion.version}
+                    </td>
+                    {activeVersion.build && (
+                      <td className="px-3 py-2 border-t border-slate-200">
+                        {activeVersion.build}
+                      </td>
+                    )}
+                    <td className="px-3 py-2 border-t border-slate-200">
+                      {activeVersion.releaseDate || "-"}
+                    </td>
+                    {activeVersion.target && (
+                      <td className="px-3 py-2 border-t border-slate-200">
+                        {activeVersion.target}
+                      </td>
+                    )}
+                    <td className="px-3 py-2 border-t border-slate-200">
+                      {activeVersion.notes}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <p className="mt-3 text-[11px] md:text-xs text-slate-500 leading-relaxed">
+            * اطلاعات نسخه‌ها بر اساس مستندات رسمی Dell جمع‌آوری شده است. قبل
+            از اعمال هرگونه ارتقا، سازگاری نسخه با محیط و قرارداد پشتیبانی خود
+            را بررسی کنید.
+          </p>
+        </div>
+
+        {/* فرم اطلاعات تماس */}
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6"
+        >
+          <h2 className="text-lg md:text-xl font-bold mb-2">
+            ۳. ثبت اطلاعات برای دریافت لینک
+          </h2>
+          <p className="text-sm text-slate-600 mb-5">
+            پس از ثبت درخواست، نسخه انتخاب‌شده بررسی شده و برای هماهنگی و ارسال
+            لینک رسمی دانلود با شما تماس می‌گیریم.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                نام و نام خانوادگی / سازمان
+              </label>
+              <input
+                type="text"
+                value={nameOrOrg}
+                onChange={(e) => setNameOrOrg(e.target.value)}
+                placeholder="مثلاً: علی رضایی – شرکت ساتراس"
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#14b8a6] focus:border-[#14b8a6] bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                شماره تماس برای هماهنگی
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="مثلاً: 0912xxxxxxx یا تلفن ثابت"
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#14b8a6] focus:border-[#14b8a6] bg-white"
+              />
+            </div>
+          </div>
+
+          <p className="text-[11px] md:text-xs text-slate-500 mb-4 leading-relaxed">
+            * لینک‌ها از مسیرهای رسمی Dell و متناسب با سریال دستگاه و وضعیت
+            پشتیبانی شما ارائه می‌شوند. این فرم صرفاً جهت تسهیل انتخاب نسخه و
+            هماهنگی است.
+          </p>
+
+          <button
+            type="submit"
+            className="rounded-full px-6 py-2.5 text-sm md:text-base font-bold transition inline-flex items-center justify-center"
+            style={{
+              backgroundColor: primary,
+              color: primaryIsYellow ? "#000" : "#fff",
+              border: `1px solid ${secondary}`,
+            }}
+          >
+            ثبت درخواست دریافت لینک
+          </button>
+        </form>
       </section>
     </main>
   );
