@@ -291,12 +291,12 @@
         "specsheet": "/specs/oracle/exadata.pdf"
       },
       {
-        "vendor": "Oracle",
-        "model": "Exadata Cloud@Customer",
-        "desc": "Exadata در محل مشتری برای سناریوهای On-Prem با تجربه Cloud و کارایی بالا.",
-        "image": "/products/oracle/exadata-c@c.webp",
-        "specsheet": "/specs/oracle/exadata-c@c.pdf"
-      },
+  "vendor": "Oracle",
+  "model": "Oracle Zero Data Loss Recovery Appliance",
+  "desc": "Appliance تخصصی برای محافظت از Oracle Database با Backup/Recovery بسیار سریع، کاهش ریسک از دست رفتن داده و مدیریت متمرکز.",
+  "image": "/products/oracle/zero-data-loss-ra.webp",
+  "specsheet": "/specs/oracle/zero-data-loss-ra.pdf"
+},
       {
         "vendor": "Oracle",
         "model": "Oracle ZFS Storage Appliance",
