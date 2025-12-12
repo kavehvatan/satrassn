@@ -103,7 +103,7 @@
       },
       {
         "vendor": "HPE",
-        "model": "ProLiant DL380a (GPU-Optimized)",
+        "model": "ProLiant DL380a G12(GPU-Optimized)",
         "desc": "مدل GPU-Optimized برای AI/VDI و بارکاری‌های شتاب‌دهی‌شده با پشتیبانی کارت گرافیک.",
         "image": "/products/hpe/dl380a.webp",
         "specsheet": "/specs/hpe/dl380a.pdf"
