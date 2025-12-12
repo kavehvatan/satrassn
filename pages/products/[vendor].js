@@ -94,7 +94,7 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
                     </div>
                   ) : null}
 
-                  {/* برند کوچک (انگلیسی) - همیشه LTR و چپ‌چین */}
+                  {/* برند کوچک (انگلیسی) - LTR و چپ‌چین */}
                   <div
                     className="text-xs text-slate-400 w-full text-left"
                     dir="ltr"
@@ -102,8 +102,11 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
                     {p.vendor || pageTitle}
                   </div>
 
-                  {/* عنوان محصول */}
-                  <h3 className="mt-1 text-lg font-semibold text-slate-900">
+                  {/* عنوان محصول (مدل) - LTR و چپ‌چین */}
+                  <h3
+                    className="mt-1 text-lg font-semibold text-slate-900 w-full text-left"
+                    dir="ltr"
+                  >
                     {p.model}
                   </h3>
 
@@ -170,7 +173,6 @@ export async function getStaticProps(ctx) {
   const fileData = readProductsJson();
   const block = fileData[vendor];
 
-  // اگر vendor توی JSON نبود، 404 بده (تمیزتر از صفحه خالی)
   if (!block) return { notFound: true };
 
   return {
