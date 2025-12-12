@@ -16,25 +16,26 @@ const FALLBACK_PRODUCTS = {
         model: "PowerStore T",
         desc: "آرایه‌های All-Flash با معماری NVMe و Scale-Up/Scale-Out؛ مناسب دیتابیس و بارکاری‌ ترکیبی با فشرده‌سازی پیشرفته.",
         image: "/products/dell/powerstore.webp",
-        specsheet: "/specs/dell/powerstore.pdf"
+        specsheet: "/specs/dell/powerstore.pdf",
       },
       {
         vendor: "Dell EMC",
         model: "Unity XT",
         desc: "میان‌رده محبوب برای فایل/NAS و بلاک/SAN با Snapshot/Replication و Cloud Tiering؛ تعادل قیمت/کارایی عالی.",
         image: "/products/dell/unity-xt480.webp",
-        specsheet: "/specs/dell/xt480.pdf"
+        specsheet: "/specs/dell/xt480.pdf",
       },
       {
         vendor: "Dell EMC",
         model: "PowerEdge R760",
         desc: "سرور 2U نسل جدید برای بارکاری‌های مجازی‌سازی، دیتابیس و VDI با پشتیبانی PCIe Gen4 و iDRAC.",
         image: "/products/dell/poweredge-r760.webp",
-        specsheet: "/specs/dell/poweredge-r760.pdf"
-      }
-    ]
+        specsheet: "/specs/dell/poweredge-r760.pdf",
+      },
+    ],
   },
 
+  // بقیه برندها: نمونه‌های رایج (۳ تا)
   hpe: {
     title: "HPE",
     intro:
@@ -45,23 +46,23 @@ const FALLBACK_PRODUCTS = {
         model: "ProLiant DL380 (Gen10/Gen11)",
         desc: "سرور 2U همه‌فن‌حریف برای مجازی‌سازی، دیتابیس و بارکاری‌های عمومی دیتاسنتر.",
         image: "/products/hpe/dl380.webp",
-        specsheet: "/specs/hpe/dl380.pdf"
+        specsheet: "/specs/hpe/dl380.pdf",
       },
       {
         vendor: "HPE",
         model: "HPE Nimble Storage (AF/HF)",
         desc: "استوریج میان‌رده SAN با کارایی بالا و مدیریت ساده؛ مناسب VMware و بارکاری‌های ترکیبی.",
         image: "/products/hpe/nimble.webp",
-        specsheet: "/specs/hpe/nimble.pdf"
+        specsheet: "/specs/hpe/nimble.pdf",
       },
       {
         vendor: "HPE",
         model: "HPE Alletra / Primera",
         desc: "استوریج‌های سازمانی All-Flash برای کارایی پایدار، HA و بارکاری‌های حساس.",
         image: "/products/hpe/alletra.webp",
-        specsheet: "/specs/hpe/alletra.pdf"
-      }
-    ]
+        specsheet: "/specs/hpe/alletra.pdf",
+      },
+    ],
   },
 
   lenovo: {
@@ -74,81 +75,23 @@ const FALLBACK_PRODUCTS = {
         model: "ThinkSystem SR650",
         desc: "سرور 2U محبوب برای مجازی‌سازی و بارکاری‌های عمومی با گزینه‌های توسعه زیاد.",
         image: "/products/lenovo/sr650.webp",
-        specsheet: "/specs/lenovo/sr650.pdf"
+        specsheet: "/specs/lenovo/sr650.pdf",
       },
       {
         vendor: "Lenovo",
         model: "ThinkSystem SR630",
         desc: "سرور 1U جمع‌وجور برای رک‌های پرتراکم و سرویس‌های عمومی دیتاسنتر.",
         image: "/products/lenovo/sr630.webp",
-        specsheet: "/specs/lenovo/sr630.pdf"
+        specsheet: "/specs/lenovo/sr630.pdf",
       },
       {
         vendor: "Lenovo",
         model: "ThinkSystem DE Series Storage",
         desc: "SAN Storage اقتصادی/میان‌رده برای بلاک و سناریوهای Backup/VMware/DB.",
         image: "/products/lenovo/de-series.webp",
-        specsheet: "/specs/lenovo/de-series.pdf"
-      }
-    ]
-  },
-
-  quantum: {
-    title: "Quantum",
-    intro:
-      "Backup/Archive در مقیاس سازمانی با Tape Library و Appliance های ذخیره‌سازی و حفاظت از داده.",
-    items: [
-      {
-        vendor: "Quantum",
-        model: "DXi Backup Appliance",
-        desc: "Dedup Appliance برای بکاپ‌گیری (مناسب NetBackup/Veeam و سناریوهای دیتاسنتری).",
-        image: "/products/quantum/dxi.webp",
-        specsheet: "/specs/quantum/dxi.pdf"
+        specsheet: "/specs/lenovo/de-series.pdf",
       },
-      {
-        vendor: "Quantum",
-        model: "Scalar Tape Library",
-        desc: "Tape Library سازمانی برای آرشیو و بکاپ بلندمدت با قابلیت توسعه.",
-        image: "/products/quantum/scalar.webp",
-        specsheet: "/specs/quantum/scalar.pdf"
-      },
-      {
-        vendor: "Quantum",
-        model: "StorNext",
-        desc: "فایل‌سیستم/مدیریت داده برای آرشیو و ورک‌فلوهای حجیم (Media و Data-heavy).",
-        image: "/products/quantum/stornext.webp",
-        specsheet: "/specs/quantum/stornext.pdf"
-      }
-    ]
-  },
-
-  juniper: {
-    title: "Juniper",
-    intro:
-      "سوئیچ/روتر و فایروال‌های Juniper برای شبکه‌های Enterprise و Datacenter با تمرکز روی کارایی و اتوماسیون.",
-    items: [
-      {
-        vendor: "Juniper",
-        model: "EX Series Switches",
-        desc: "سوئیچ‌های Enterprise برای Access/Distribution با گزینه‌های متنوع پورت و استک.",
-        image: "/products/juniper/ex-series.webp",
-        specsheet: "/specs/juniper/ex-series.pdf"
-      },
-      {
-        vendor: "Juniper",
-        model: "QFX Series (Datacenter)",
-        desc: "سوئیچ‌های دیتاسنتری مناسب معماری Spine/Leaf و ترافیک‌های پرتراکم.",
-        image: "/products/juniper/qfx-series.webp",
-        specsheet: "/specs/juniper/qfx-series.pdf"
-      },
-      {
-        vendor: "Juniper",
-        model: "SRX Series Firewalls",
-        desc: "فایروال/UTM سازمانی برای امنیت شبکه، VPN و کنترل تهدیدات.",
-        image: "/products/juniper/srx-series.webp",
-        specsheet: "/specs/juniper/srx-series.pdf"
-      }
-    ]
+    ],
   },
 
   cisco: {
@@ -161,23 +104,81 @@ const FALLBACK_PRODUCTS = {
         model: "Nexus 9000 Series",
         desc: "سوئیچ‌های دیتاسنتری برای Spine/Leaf، کارایی بالا و فیچرهای شبکه‌سازی مدرن.",
         image: "/products/cisco/nexus-9k.webp",
-        specsheet: "/specs/cisco/nexus-9k.pdf"
+        specsheet: "/specs/cisco/nexus-9k.pdf",
       },
       {
         vendor: "Cisco",
         model: "Catalyst 9300 Series",
         desc: "سوئیچ Access/Distribution سازمانی با قابلیت‌های امنیتی و مدیریت‌پذیری بالا.",
         image: "/products/cisco/catalyst-9300.webp",
-        specsheet: "/specs/cisco/catalyst-9300.pdf"
+        specsheet: "/specs/cisco/catalyst-9300.pdf",
       },
       {
         vendor: "Cisco",
         model: "UCS C-Series Rack Servers",
         desc: "سرورهای رک‌مونت دیتاسنتری برای مجازی‌سازی و بارکاری‌های سازمانی.",
         image: "/products/cisco/ucs-c.webp",
-        specsheet: "/specs/cisco/ucs-c.pdf"
-      }
-    ]
+        specsheet: "/specs/cisco/ucs-c.pdf",
+      },
+    ],
+  },
+
+  juniper: {
+    title: "Juniper",
+    intro:
+      "سوئیچ/روتر و فایروال‌های Juniper برای شبکه‌های Enterprise و Datacenter با تمرکز روی کارایی و اتوماسیون.",
+    items: [
+      {
+        vendor: "Juniper",
+        model: "EX Series Switches",
+        desc: "سوئیچ‌های Enterprise برای Access/Distribution با گزینه‌های متنوع پورت و استک.",
+        image: "/products/juniper/ex-series.webp",
+        specsheet: "/specs/juniper/ex-series.pdf",
+      },
+      {
+        vendor: "Juniper",
+        model: "QFX Series (Datacenter)",
+        desc: "سوئیچ‌های دیتاسنتری مناسب معماری Spine/Leaf و ترافیک‌های پرتراکم.",
+        image: "/products/juniper/qfx-series.webp",
+        specsheet: "/specs/juniper/qfx-series.pdf",
+      },
+      {
+        vendor: "Juniper",
+        model: "SRX Series Firewalls",
+        desc: "فایروال/UTM سازمانی برای امنیت شبکه، VPN و کنترل تهدیدات.",
+        image: "/products/juniper/srx-series.webp",
+        specsheet: "/specs/juniper/srx-series.pdf",
+      },
+    ],
+  },
+
+  quantum: {
+    title: "Quantum",
+    intro:
+      "Backup/Archive در مقیاس سازمانی با Tape Library و Appliance های ذخیره‌سازی و حفاظت از داده.",
+    items: [
+      {
+        vendor: "Quantum",
+        model: "DXi Backup Appliance",
+        desc: "Dedup Appliance برای بکاپ‌گیری (مناسب NetBackup/Veeam و سناریوهای دیتاسنتری).",
+        image: "/products/quantum/dxi.webp",
+        specsheet: "/specs/quantum/dxi.pdf",
+      },
+      {
+        vendor: "Quantum",
+        model: "Scalar Tape Library",
+        desc: "Tape Library سازمانی برای آرشیو و بکاپ بلندمدت با قابلیت توسعه.",
+        image: "/products/quantum/scalar.webp",
+        specsheet: "/specs/quantum/scalar.pdf",
+      },
+      {
+        vendor: "Quantum",
+        model: "StorNext",
+        desc: "فایل‌سیستم/مدیریت داده برای آرشیو و ورک‌فلوهای حجیم (Media و Data-heavy).",
+        image: "/products/quantum/stornext.webp",
+        specsheet: "/specs/quantum/stornext.pdf",
+      },
+    ],
   },
 
   paloalto: {
@@ -190,110 +191,23 @@ const FALLBACK_PRODUCTS = {
         model: "PA-3200 Series",
         desc: "NGFW میان‌رده برای سازمان‌ها با توان پردازشی مناسب و قابلیت‌های امنیتی کامل.",
         image: "/products/paloalto/pa-3200.webp",
-        specsheet: "/specs/paloalto/pa-3200.pdf"
+        specsheet: "/specs/paloalto/pa-3200.pdf",
       },
       {
         vendor: "Palo Alto Networks",
         model: "PA-5200 Series",
         desc: "NGFW سطح Enterprise برای دیتاسنتر و سازمان‌های بزرگ با Throughput بالاتر.",
         image: "/products/paloalto/pa-5200.webp",
-        specsheet: "/specs/paloalto/pa-5200.pdf"
+        specsheet: "/specs/paloalto/pa-5200.pdf",
       },
       {
         vendor: "Palo Alto Networks",
         model: "Panorama",
         desc: "مدیریت متمرکز سیاست‌ها و لاگ‌ها برای چندین فایروال در مقیاس سازمانی.",
         image: "/products/paloalto/panorama.webp",
-        specsheet: "/specs/paloalto/panorama.pdf"
-      }
-    ]
-  },
-
-  hitachi: {
-    title: "Hitachi Vantara",
-    intro:
-      "استوریج‌های سازمانی برای کارایی پایدار، قابلیت اطمینان بالا و سناریوهای Mission-Critical.",
-    items: [
-      {
-        vendor: "Hitachi Vantara",
-        model: "VSP E Series",
-        desc: "Enterprise Storage برای بارکاری‌های حساس با قابلیت‌های پیشرفته Availability.",
-        image: "/products/hitachi/vsp-e.webp",
-        specsheet: "/specs/hitachi/vsp-e.pdf"
+        specsheet: "/specs/paloalto/panorama.pdf",
       },
-      {
-        vendor: "Hitachi Vantara",
-        model: "VSP G Series",
-        desc: "استوریج‌های کلاس Enterprise/High-end برای دیتاسنترهای بزرگ و رشدپذیر.",
-        image: "/products/hitachi/vsp-g.webp",
-        specsheet: "/specs/hitachi/vsp-g.pdf"
-      },
-      {
-        vendor: "Hitachi Vantara",
-        model: "HCP (Content Platform)",
-        desc: "Object Storage برای آرشیو، لاگ‌ها و داده‌های Unstructured در مقیاس بالا.",
-        image: "/products/hitachi/hcp.webp",
-        specsheet: "/specs/hitachi/hcp.pdf"
-      }
-    ]
-  },
-
-  brocade: {
-    title: "Brocade",
-    intro:
-      "سوئیچ‌های Fibre Channel برای SAN با تمرکز بر پایداری، Latency پایین و مقیاس‌پذیری دیتاسنتری.",
-    items: [
-      {
-        vendor: "Brocade",
-        model: "G620 Switch",
-        desc: "سوئیچ FC پرکاربرد دیتاسنتری برای SAN Fabric های سازمانی.",
-        image: "/products/brocade/g620.webp",
-        specsheet: "/specs/brocade/g620.pdf"
-      },
-      {
-        vendor: "Brocade",
-        model: "6505 / 6510 (Legacy Common)",
-        desc: "مدل‌های رایج نسل‌های قبل که هنوز در بسیاری از دیتاسنترها دیده می‌شوند.",
-        image: "/products/brocade/6505-6510.webp",
-        specsheet: "/specs/brocade/6505-6510.pdf"
-      },
-      {
-        vendor: "Brocade",
-        model: "X6 Director Series",
-        desc: "Director کلاس Enterprise برای SAN های بزرگ با قابلیت‌های HA و مقیاس بالا.",
-        image: "/products/brocade/x6-director.webp",
-        specsheet: "/specs/brocade/x6-director.pdf"
-      }
-    ]
-  },
-
-  oracle: {
-    title: "Oracle",
-    intro:
-      "پلتفرم‌های دیتابیس و سیستم‌های مهندسی‌شده Oracle برای کارایی و یکپارچگی بالا در بارکاری‌های دیتابیس.",
-    items: [
-      {
-        vendor: "Oracle",
-        model: "Exadata Database Machine",
-        desc: "سیستم مهندسی‌شده برای Oracle DB با کارایی بالا و بهینه‌سازی End-to-End.",
-        image: "/products/oracle/exadata.webp",
-        specsheet: "/specs/oracle/exadata.pdf"
-      },
-      {
-        vendor: "Oracle",
-        model: "Oracle ZFS Storage Appliance",
-        desc: "استوریج فایل/بلاک برای سناریوهای دیتابیس و محیط‌های سازمانی.",
-        image: "/products/oracle/zfs.webp",
-        specsheet: "/specs/oracle/zfs.pdf"
-      },
-      {
-        vendor: "Oracle",
-        model: "Private Cloud Appliance",
-        desc: "زیرساخت آماده برای راه‌اندازی Cloud خصوصی و سرویس‌های سازمانی.",
-        image: "/products/oracle/pca.webp",
-        specsheet: "/specs/oracle/pca.pdf"
-      }
-    ]
+    ],
   },
 
   fortinet: {
@@ -306,23 +220,110 @@ const FALLBACK_PRODUCTS = {
         model: "FortiGate 100F",
         desc: "فایروال محبوب شعب/سازمان برای NGFW + SD-WAN با ارزش خرید بالا.",
         image: "/products/fortinet/fortigate-100f.webp",
-        specsheet: "/specs/fortinet/fortigate-100f.pdf"
+        specsheet: "/specs/fortinet/fortigate-100f.pdf",
       },
       {
         vendor: "Fortinet",
         model: "FortiAnalyzer",
         desc: "تحلیل و گزارش‌گیری متمرکز لاگ‌ها برای دید بهتر امنیتی و Compliance.",
         image: "/products/fortinet/fortianalyzer.webp",
-        specsheet: "/specs/fortinet/fortianalyzer.pdf"
+        specsheet: "/specs/fortinet/fortianalyzer.pdf",
       },
       {
         vendor: "Fortinet",
         model: "FortiManager",
         desc: "مدیریت مرکزی پالیسی‌ها و دیپلوی تنظیمات در مقیاس چندسایتی.",
         image: "/products/fortinet/fortimanager.webp",
-        specsheet: "/specs/fortinet/fortimanager.pdf"
-      }
-    ]
+        specsheet: "/specs/fortinet/fortimanager.pdf",
+      },
+    ],
+  },
+
+  brocade: {
+    title: "Brocade",
+    intro:
+      "سوئیچ‌های Fibre Channel برای SAN با تمرکز بر پایداری، Latency پایین و مقیاس‌پذیری دیتاسنتری.",
+    items: [
+      {
+        vendor: "Brocade",
+        model: "G620 Switch",
+        desc: "سوئیچ FC پرکاربرد دیتاسنتری برای SAN Fabric های سازمانی.",
+        image: "/products/brocade/g620.webp",
+        specsheet: "/specs/brocade/g620.pdf",
+      },
+      {
+        vendor: "Brocade",
+        model: "6505 / 6510 (Legacy Common)",
+        desc: "مدل‌های رایج نسل‌های قبل که هنوز در بسیاری از دیتاسنترها دیده می‌شوند.",
+        image: "/products/brocade/6505-6510.webp",
+        specsheet: "/specs/brocade/6505-6510.pdf",
+      },
+      {
+        vendor: "Brocade",
+        model: "X6 Director Series",
+        desc: "Director کلاس Enterprise برای SAN های بزرگ با قابلیت‌های HA و مقیاس بالا.",
+        image: "/products/brocade/x6-director.webp",
+        specsheet: "/specs/brocade/x6-director.pdf",
+      },
+    ],
+  },
+
+  hitachi: {
+    title: "Hitachi Vantara",
+    intro:
+      "استوریج‌های سازمانی برای کارایی پایدار، قابلیت اطمینان بالا و سناریوهای Mission-Critical.",
+    items: [
+      {
+        vendor: "Hitachi Vantara",
+        model: "VSP E Series",
+        desc: "Enterprise Storage برای بارکاری‌های حساس با قابلیت‌های پیشرفته Availability.",
+        image: "/products/hitachi/vsp-e.webp",
+        specsheet: "/specs/hitachi/vsp-e.pdf",
+      },
+      {
+        vendor: "Hitachi Vantara",
+        model: "VSP G Series",
+        desc: "استوریج‌های کلاس Enterprise/High-end برای دیتاسنترهای بزرگ و رشدپذیر.",
+        image: "/products/hitachi/vsp-g.webp",
+        specsheet: "/specs/hitachi/vsp-g.pdf",
+      },
+      {
+        vendor: "Hitachi Vantara",
+        model: "HCP (Content Platform)",
+        desc: "Object Storage برای آرشیو، لاگ‌ها و داده‌های Unstructured در مقیاس بالا.",
+        image: "/products/hitachi/hcp.webp",
+        specsheet: "/specs/hitachi/hcp.pdf",
+      },
+    ],
+  },
+
+  oracle: {
+    title: "Oracle",
+    intro:
+      "پلتفرم‌های دیتابیس و سیستم‌های مهندسی‌شده Oracle برای کارایی و یکپارچگی بالا در بارکاری‌های دیتابیس.",
+    items: [
+      {
+        vendor: "Oracle",
+        model: "Exadata Database Machine",
+        desc: "سیستم مهندسی‌شده برای Oracle DB با کارایی بالا و بهینه‌سازی End-to-End.",
+        image: "/products/oracle/exadata.webp",
+        specsheet: "/specs/oracle/exadata.pdf",
+      },
+      {
+        vendor: "Oracle",
+        model: "Oracle ZFS Storage Appliance",
+        desc: "استوریج فایل/بلاک برای سناریوهای دیتابیس و محیط‌های سازمانی.",
+        image: "/products/oracle/zfs.webp",
+        specsheet: "/specs/oracle/zfs.pdf",
+      },
+      {
+        vendor: "Oracle",
+        model: "Private Cloud Appliance",
+        desc: "زیرساخت آماده برای راه‌اندازی Cloud خصوصی و سرویس‌های سازمانی.",
+        image: "/products/oracle/pca.webp",
+        specsheet: "/specs/oracle/pca.pdf",
+      },
+    ],
   },
 
   f5: {
@@ -335,24 +336,24 @@ const FALLBACK_PRODUCTS = {
         model: "BIG-IP iSeries (Hardware)",
         desc: "ADC سخت‌افزاری برای Load Balancing، SSL Offload و محافظت از اپلیکیشن.",
         image: "/products/f5/bigip-iseries.webp",
-        specsheet: "/specs/f5/bigip-iseries.pdf"
+        specsheet: "/specs/f5/bigip-iseries.pdf",
       },
       {
         vendor: "F5",
         model: "BIG-IP VE (Virtual Edition)",
         desc: "نسخه مجازی برای VMware/KVM و سناریوهای Cloud/Private Cloud.",
         image: "/products/f5/bigip-ve.webp",
-        specsheet: "/specs/f5/bigip-ve.pdf"
+        specsheet: "/specs/f5/bigip-ve.pdf",
       },
       {
         vendor: "F5",
         model: "BIG-IQ (Management)",
         desc: "مدیریت مرکزی، لایسنس و Lifecycle برای محیط‌های چند BIG-IP.",
         image: "/products/f5/big-iq.webp",
-        specsheet: "/specs/f5/big-iq.pdf"
-      }
-    ]
-  }
+        specsheet: "/specs/f5/big-iq.pdf",
+      },
+    ],
+  },
 };
 
 // ---------- Helpers ----------
@@ -509,7 +510,6 @@ export async function getStaticPaths() {
   const fileData = readProductsJson();
   const fallbackKeys = Object.keys(FALLBACK_PRODUCTS);
   const fileKeys = Object.keys(fileData || {});
-  // اتحاد کلیدهای موجود در فایل و فالبک
   const vendors = Array.from(new Set([...fallbackKeys, ...fileKeys]));
   const paths = vendors.map((v) => ({ params: { vendor: v } }));
   return { paths, fallback: false };
@@ -522,7 +522,6 @@ export async function getStaticProps(ctx) {
   const blockFromFile = fileData[vendor];
   const blockFallback = FALLBACK_PRODUCTS[vendor];
 
-  // اگر در فایل بود، همون مقدم است؛ وگرنه فالبک
   const block = blockFromFile || blockFallback || {};
 
   return {
@@ -531,7 +530,7 @@ export async function getStaticProps(ctx) {
       title: block.title || vendor.toUpperCase(),
       intro: block.intro || "",
       items: Array.isArray(block.items) ? block.items : [],
-      theme: block.theme || block.themeVendor || vendor // برای تم احتمالی
-    }
+      theme: block.theme || block.themeVendor || vendor,
+    },
   };
 }
