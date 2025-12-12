@@ -363,9 +363,7 @@ export default function DownloadsPage() {
           )}
 
           <p className="mt-3 text-[11px] md:text-xs text-slate-500 leading-relaxed">
-            * اطلاعات نسخه‌ها بر اساس مستندات رسمی Dell جمع‌آوری شده است. قبل
-            از اعمال هرگونه ارتقا، سازگاری نسخه با محیط و قرارداد پشتیبانی خود
-            را بررسی کنید.
+            * تمامی نسخ بطور مستقیم از سایت Dell دریافت شده است.
           </p>
         </div>
 
@@ -384,7 +382,7 @@ export default function DownloadsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                نام و نام خانوادگی / سازمان
+                نام  / سازمان
               </label>
               <input
                 type="text"
