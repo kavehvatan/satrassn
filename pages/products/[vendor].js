@@ -82,6 +82,7 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
                 className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition"
               >
                 <div className="p-6 flex flex-col h-full">
+                  {/* تصویر */}
                   {p.image ? (
                     <div className="mb-6 flex items-center justify-center">
                       <img
@@ -93,20 +94,27 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
                     </div>
                   ) : null}
 
-                  <div className="text-xs text-slate-400">
+                  {/* برند کوچک (انگلیسی) - همیشه LTR و چپ‌چین */}
+                  <div
+                    className="text-xs text-slate-400 w-full text-left"
+                    dir="ltr"
+                  >
                     {p.vendor || pageTitle}
                   </div>
 
+                  {/* عنوان محصول */}
                   <h3 className="mt-1 text-lg font-semibold text-slate-900">
                     {p.model}
                   </h3>
 
+                  {/* توضیح */}
                   {p.desc ? (
                     <p className="mt-3 text-slate-600 leading-7">{p.desc}</p>
                   ) : null}
 
                   <div className="mt-auto" />
 
+                  {/* دکمه‌ها */}
                   <div className="mt-6 flex items-center justify-center gap-6">
                     {p.specsheet && (
                       <a
