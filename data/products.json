@@ -84,141 +84,137 @@
   },
 
   "hpe": {
-  "title": "HPE",
-  "intro": "سرورها و استوریج‌های HPE برای دیتاسنترهای سازمانی با تمرکز بر پایداری، مدیریت‌پذیری و اکوسیستم گسترده.",
-  "items": [
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL380 Gen10",
-      "desc": "سرور 2U بسیار رایج برای مجازی‌سازی، دیتابیس و بارکاری‌های عمومی سازمانی (نسل Gen10).",
-      "image": "/products/hpe/dl380-gen10.webp",
-      "specsheet": "/specs/hpe/dl380-gen10.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL360 Gen10",
-      "desc": "سرور 1U پرتراکم برای سرویس‌های عمومی، وب، اپلیکیشن و رک‌های شلوغ (نسل Gen10).",
-      "image": "/products/hpe/dl360-gen10.webp",
-      "specsheet": "/specs/hpe/dl360-gen10.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL560 Gen10",
-      "desc": "سرور 4-Socket برای بارکاری‌های Scale-Up، دیتابیس‌های سنگین و پردازش‌های سازمانی.",
-      "image": "/products/hpe/dl560-gen10.webp",
-      "specsheet": "/specs/hpe/dl560-gen10.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL580 Gen10",
-      "desc": "سرور Enterprise 4-Socket/Scale-Up برای بارکاری‌های Mission-Critical و دیتابیس‌های بزرگ.",
-      "image": "/products/hpe/dl580-gen10.webp",
-      "specsheet": "/specs/hpe/dl580-gen10.pdf"
-    },
-
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL380 Gen10 Plus",
-      "desc": "نسخه بهبود یافته Gen10 با کارایی و گزینه‌های توسعه بهتر؛ انتخاب رایج برای Refresh دیتاسنتر.",
-      "image": "/products/hpe/dl380-gen10plus.webp",
-      "specsheet": "/specs/hpe/dl380-gen10plus.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL360 Gen10 Plus",
-      "desc": "سرور 1U پرتراکم با قابلیت‌های نسل Gen10 Plus برای رک‌های پرتراکم و سرویس‌های عمومی.",
-      "image": "/products/hpe/dl360-gen10plus.webp",
-      "specsheet": "/specs/hpe/dl360-gen10plus.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL385 Gen10 Plus (AMD)",
-      "desc": "سرور 2U مبتنی بر AMD برای مجازی‌سازی و بارکاری‌های CPU-Heavy با نسبت قیمت/کارایی عالی.",
-      "image": "/products/hpe/dl385-gen10plus.webp",
-      "specsheet": "/specs/hpe/dl385-gen10plus.pdf"
-    },
-
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL380 Gen11",
-      "desc": "سرور 2U نسل Gen11 برای دیتاسنترهای مدرن با انعطاف بالا در کانفیگ و توسعه.",
-      "image": "/products/hpe/dl380-gen11.webp",
-      "specsheet": "/specs/hpe/dl380-gen11.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL360 Gen11",
-      "desc": "سرور 1U نسل Gen11 برای محیط‌های پرتراکم و سرویس‌های سازمانی با کارایی بالا.",
-      "image": "/products/hpe/dl360-gen11.webp",
-      "specsheet": "/specs/hpe/dl360-gen11.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL380a Gen11 (GPU-Optimized)",
-      "desc": "مدل GPU-Optimized نسل Gen11 برای AI/VDI و بارکاری‌های شتاب‌دهی‌شده با پشتیبانی کارت گرافیک.",
-      "image": "/products/hpe/dl380a-gen11.webp",
-      "specsheet": "/specs/hpe/dl380a-gen11.pdf"
-    },
-
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL380 Gen12",
-      "desc": "نسل جدید DL380 برای دیتاسنترهای آینده‌نگر با کارایی به‌روز و گزینه‌های توسعه جدید.",
-      "image": "/products/hpe/dl380-gen12.webp",
-      "specsheet": "/specs/hpe/dl380-gen12.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL360 Gen12",
-      "desc": "سرور 1U نسل Gen12 برای رک‌های پرتراکم با تمرکز بر کارایی و بهینگی.",
-      "image": "/products/hpe/dl360-gen12.webp",
-      "specsheet": "/specs/hpe/dl360-gen12.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "ProLiant DL380a Gen12 (GPU-Optimized)",
-      "desc": "مدل GPU-Optimized نسل Gen12 برای AI/VDI و بارکاری‌های شتاب‌دهی‌شده با پشتیبانی کارت‌های GPU و توسعه‌پذیری بهتر.",
-      "image": "/products/hpe/dl380a-gen12.webp",
-      "specsheet": "/specs/hpe/dl380a-gen12.pdf"
-    },
-
-    {
-      "vendor": "HPE",
-      "model": "HPE Synergy (Composable)",
-      "desc": "Composable Infrastructure برای دیتاسنترهای بزرگ با مدیریت یکپارچه و انعطاف معماری.",
-      "image": "/products/hpe/synergy.webp",
-      "specsheet": "/specs/hpe/synergy.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "HPE Nimble Storage (AF/HF)",
-      "desc": "استوریج SAN میان‌رده با کارایی بالا و مدیریت ساده؛ مناسب VMware و بارکاری‌های ترکیبی.",
-      "image": "/products/hpe/nimble.webp",
-      "specsheet": "/specs/hpe/nimble.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "HPE Alletra / Primera",
-      "desc": "استوریج‌های All-Flash کلاس Enterprise برای کارایی پایدار، Availability بالا و رشدپذیری.",
-      "image": "/products/hpe/alletra.webp",
-      "specsheet": "/specs/hpe/alletra.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "HPE MSA 2060",
-      "desc": "استوریج SAN اقتصادی/میان‌رده برای SMB/Enterprise سبک؛ گزینه رایج برای پروژه‌های به‌صرفه.",
-      "image": "/products/hpe/msa-2060.webp",
-      "specsheet": "/specs/hpe/msa-2060.pdf"
-    },
-    {
-      "vendor": "HPE",
-      "model": "HPE StoreOnce (Backup Appliance)",
-      "desc": "Appliance بکاپ با Dedup برای حفاظت از داده و بکاپ‌گیری سازمانی (سناریوهای On-Prem).",
-      "image": "/products/hpe/storeonce.webp",
-      "specsheet": "/specs/hpe/storeonce.pdf"
-    }
-  ]
-}
+    "title": "HPE",
+    "intro": "سرورها و استوریج‌های HPE برای دیتاسنترهای سازمانی با تمرکز بر پایداری، مدیریت‌پذیری و اکوسیستم گسترده.",
+    "items": [
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL380 Gen10",
+        "desc": "سرور 2U بسیار رایج برای مجازی‌سازی، دیتابیس و بارکاری‌های عمومی سازمانی (نسل Gen10).",
+        "image": "/products/hpe/dl380-gen10.webp",
+        "specsheet": "/specs/hpe/dl380-gen10.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL360 Gen10",
+        "desc": "سرور 1U پرتراکم برای سرویس‌های عمومی، وب، اپلیکیشن و رک‌های شلوغ (نسل Gen10).",
+        "image": "/products/hpe/dl360-gen10.webp",
+        "specsheet": "/specs/hpe/dl360-gen10.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL560 Gen10",
+        "desc": "سرور 4-Socket برای بارکاری‌های Scale-Up، دیتابیس‌های سنگین و پردازش‌های سازمانی.",
+        "image": "/products/hpe/dl560-gen10.webp",
+        "specsheet": "/specs/hpe/dl560-gen10.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL580 Gen10",
+        "desc": "سرور Enterprise 4-Socket/Scale-Up برای بارکاری‌های Mission-Critical و دیتابیس‌های بزرگ.",
+        "image": "/products/hpe/dl580-gen10.webp",
+        "specsheet": "/specs/hpe/dl580-gen10.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL380 Gen10 Plus",
+        "desc": "نسخه بهبود یافته Gen10 با کارایی و گزینه‌های توسعه بهتر؛ انتخاب رایج برای Refresh دیتاسنتر.",
+        "image": "/products/hpe/dl380-gen10plus.webp",
+        "specsheet": "/specs/hpe/dl380-gen10plus.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL360 Gen10 Plus",
+        "desc": "سرور 1U پرتراکم با قابلیت‌های نسل Gen10 Plus برای رک‌های پرتراکم و سرویس‌های عمومی.",
+        "image": "/products/hpe/dl360-gen10plus.webp",
+        "specsheet": "/specs/hpe/dl360-gen10plus.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL385 Gen10 Plus (AMD)",
+        "desc": "سرور 2U مبتنی بر AMD برای مجازی‌سازی و بارکاری‌های CPU-Heavy با نسبت قیمت/کارایی عالی.",
+        "image": "/products/hpe/dl385-gen10plus.webp",
+        "specsheet": "/specs/hpe/dl385-gen10plus.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL380 Gen11",
+        "desc": "سرور 2U نسل Gen11 برای دیتاسنترهای مدرن با انعطاف بالا در کانفیگ و توسعه.",
+        "image": "/products/hpe/dl380-gen11.webp",
+        "specsheet": "/specs/hpe/dl380-gen11.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL360 Gen11",
+        "desc": "سرور 1U نسل Gen11 برای محیط‌های پرتراکم و سرویس‌های سازمانی با کارایی بالا.",
+        "image": "/products/hpe/dl360-gen11.webp",
+        "specsheet": "/specs/hpe/dl360-gen11.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL380a Gen11 (GPU-Optimized)",
+        "desc": "مدل GPU-Optimized نسل Gen11 برای AI/VDI و بارکاری‌های شتاب‌دهی‌شده با پشتیبانی کارت گرافیک.",
+        "image": "/products/hpe/dl380a-gen11.webp",
+        "specsheet": "/specs/hpe/dl380a-gen11.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL380 Gen12",
+        "desc": "نسل جدید DL380 برای دیتاسنترهای آینده‌نگر با کارایی به‌روز و گزینه‌های توسعه جدید.",
+        "image": "/products/hpe/dl380-gen12.webp",
+        "specsheet": "/specs/hpe/dl380-gen12.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL360 Gen12",
+        "desc": "سرور 1U نسل Gen12 برای رک‌های پرتراکم با تمرکز بر کارایی و بهینگی.",
+        "image": "/products/hpe/dl360-gen12.webp",
+        "specsheet": "/specs/hpe/dl360-gen12.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "ProLiant DL380a Gen12 (GPU-Optimized)",
+        "desc": "مدل GPU-Optimized نسل Gen12 برای AI/VDI و بارکاری‌های شتاب‌دهی‌شده با پشتیبانی کارت‌های GPU و توسعه‌پذیری بهتر.",
+        "image": "/products/hpe/dl380a-gen12.webp",
+        "specsheet": "/specs/hpe/dl380a-gen12.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "HPE Synergy (Composable)",
+        "desc": "Composable Infrastructure برای دیتاسنترهای بزرگ با مدیریت یکپارچه و انعطاف معماری.",
+        "image": "/products/hpe/synergy.webp",
+        "specsheet": "/specs/hpe/synergy.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "HPE Nimble Storage (AF/HF)",
+        "desc": "استوریج SAN میان‌رده با کارایی بالا و مدیریت ساده؛ مناسب VMware و بارکاری‌های ترکیبی.",
+        "image": "/products/hpe/nimble.webp",
+        "specsheet": "/specs/hpe/nimble.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "HPE Alletra / Primera",
+        "desc": "استوریج‌های All-Flash کلاس Enterprise برای کارایی پایدار، Availability بالا و رشدپذیری.",
+        "image": "/products/hpe/alletra.webp",
+        "specsheet": "/specs/hpe/alletra.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "HPE MSA 2060",
+        "desc": "استوریج SAN اقتصادی/میان‌رده برای SMB/Enterprise سبک؛ گزینه رایج برای پروژه‌های به‌صرفه.",
+        "image": "/products/hpe/msa-2060.webp",
+        "specsheet": "/specs/hpe/msa-2060.pdf"
+      },
+      {
+        "vendor": "HPE",
+        "model": "HPE StoreOnce (Backup Appliance)",
+        "desc": "Appliance بکاپ با Dedup برای حفاظت از داده و بکاپ‌گیری سازمانی (سناریوهای On-Prem).",
+        "image": "/products/hpe/storeonce.webp",
+        "specsheet": "/specs/hpe/storeonce.pdf"
+      }
+    ]
+  },
 
   "lenovo": {
     "title": "Lenovo",
@@ -379,12 +375,12 @@
         "specsheet": "/specs/oracle/exadata.pdf"
       },
       {
-  "vendor": "Oracle",
-  "model": "Oracle Zero Data Loss Recovery Appliance",
-  "desc": "Appliance تخصصی برای محافظت از Oracle Database با Backup/Recovery بسیار سریع، کاهش ریسک از دست رفتن داده و مدیریت متمرکز.",
-  "image": "/products/oracle/zero-data-loss-ra.webp",
-  "specsheet": "/specs/oracle/zero-data-loss-ra.pdf"
-},
+        "vendor": "Oracle",
+        "model": "Oracle Zero Data Loss Recovery Appliance",
+        "desc": "Appliance تخصصی برای محافظت از Oracle Database با Backup/Recovery بسیار سریع، کاهش ریسک از دست رفتن داده و مدیریت متمرکز.",
+        "image": "/products/oracle/zero-data-loss-ra.webp",
+        "specsheet": "/specs/oracle/zero-data-loss-ra.pdf"
+      },
       {
         "vendor": "Oracle",
         "model": "Oracle ZFS Storage Appliance",
