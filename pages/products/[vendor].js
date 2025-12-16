@@ -48,17 +48,125 @@ function toLatinDigits(input) {
   return s.replace(/[۰-۹٠-٩]/g, (d) => map[d] || d);
 }
 
-function norm(s) {
-  return String(s || "")
-    .trim()
+function normKey(s) {
+  return toLatinDigits(String(s || ""))
     .toLowerCase()
-    .replace(/\s+/g, " ");
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-function isFortinetMatrix(vendor, model) {
-  if (String(vendor || "").toLowerCase() !== "fortinet") return false;
-  const m = norm(toLatinDigits(model));
-  return m.includes("fortinet product matrix") || m === "product matrix" || m.includes("product matrix");
+function findByModel(items, includesAny = []) {
+  const list = Array.isArray(items) ? items : [];
+  const needles = includesAny.map((x) => normKey(x));
+  return (
+    list.find((it) => {
+      const m = normKey(it?.model);
+      return needles.some((n) => m.includes(n));
+    }) || null
+  );
+}
+
+function mergeKeepExisting(template, existing) {
+  if (!existing) return template;
+  return {
+    ...template,
+    // اگر قبلاً تو JSON چیزی داشتی، همونو نگه دار (خصوصاً لینک‌ها)
+    vendor: existing.vendor || template.vendor,
+    desc: existing.desc || template.desc,
+    image: existing.image || template.image,
+    specsheet: existing.specsheet || template.specsheet,
+  };
+}
+
+// فقط Fortinet را اینجا مرتب و اصلاح می‌کنیم
+function normalizeItemsForVendor(vendor, items) {
+  if (vendor !== "fortinet") return Array.isArray(items) ? items : [];
+
+  const list = Array.isArray(items) ? items : [];
+
+  // سه تا FortiGate قدیمی حذف
+  const removed = new Set([
+    normKey("FortiGate 60F"),
+    normKey("FortiGate 100F"),
+    normKey("FortiGate 200F"),
+  ]);
+
+  const kept = list.filter((it) => !removed.has(normKey(it?.model)));
+
+  // تمپلیت‌های جدید (اگر در JSON نبود هم از همین‌ها ساخته می‌شود)
+  const T_120G = {
+    vendor: "Fortinet",
+    model: "FortiGate 120G",
+    desc: "فایروال نسل جدید برای شعب/سازمان با NGFW و SD-WAN؛ گزینه خوش‌قیمت برای سناریوهای Enterprise Edge.",
+    image: "/products/fortinet/fortigate-120g.webp",
+    specsheet: "/specs/fortinet/fortigate-120g.pdf",
+  };
+
+  const T_900G = {
+    vendor: "Fortinet",
+    model: "FortiGate 900G",
+    desc: "فایروال قدرتمند دیتاسنتری برای سازمان‌های بزرگ با توان پردازشی بالا و ظرفیت مناسب برای ترافیک‌های پرتراکم.",
+    image: "/products/fortinet/fortigate-900g.webp",
+    specsheet: "/specs/fortinet/fortigate-900g.pdf",
+  };
+
+  const T_FORTIWEB_1000F = {
+    vendor: "Fortinet",
+    model: "FortiWeb 1000F",
+    desc: "WAF سخت‌افزاری برای حفاظت اپلیکیشن‌های وب (WAAP/WAF) با قابلیت‌های امنیتی پیشرفته برای سرویس‌های حیاتی.",
+    image: "/products/fortinet/fortiweb-1000f.webp",
+    specsheet: "/specs/fortinet/fortiweb-1000f.pdf",
+  };
+
+  const T_MATRIX = {
+    vendor: "Fortinet",
+    model: "Fortinet Product Matrix",
+    desc: "نمای کلی خانواده محصولات Fortinet (Firewall / WAF / Management / Switching) برای مقایسه سریع و انتخاب صحیح.",
+    image: "", // تصویر لازم نیست
+    specsheet: "/specs/fortinet/fortinet-product-matrix.pdf",
+  };
+
+  // اگر قبلاً تو JSON این آیتم‌ها یا لینک‌هاشون رو گذاشتی، همونو بردار
+  const ex120 = findByModel(list, ["FortiGate 120G", "FG-120G", "120g"]);
+  const ex900 = findByModel(list, ["FortiGate 900G", "FG-900G", "900g"]);
+  const exWaf = findByModel(list, ["FortiWeb 1000F", "fortiweb 1000f", "1000f"]);
+  const exMatrix = findByModel(list, ["Fortinet Product Matrix", "product matrix", "matrix"]);
+
+  const i120 = mergeKeepExisting(T_120G, ex120);
+  const i900 = mergeKeepExisting(T_900G, ex900);
+  const iWaf = mergeKeepExisting(T_FORTIWEB_1000F, exWaf);
+  const iMatrix = mergeKeepExisting(T_MATRIX, exMatrix);
+
+  // بقیه Fortinet ها رو (Analyzer/Manager/Switch) از JSON نگه می‌داریم
+  const iSwitch = findByModel(kept, ["FortiSwitch"]) || {
+    vendor: "Fortinet",
+    model: "FortiSwitch (Enterprise Switching)",
+    desc: "سوئیچ‌های سازمانی برای Access/Distribution با یکپارچگی در Fabric و مدیریت.",
+    image: "/products/fortinet/fortiswitch.webp",
+    specsheet: "/specs/fortinet/fortiswitch.pdf",
+  };
+
+  const iManager = findByModel(kept, ["FortiManager"]) || {
+    vendor: "Fortinet",
+    model: "FortiManager",
+    desc: "مدیریت مرکزی پالیسی‌ها و دیپلوی تنظیمات در مقیاس چندسایتی.",
+    image: "/products/fortinet/fortimanager.webp",
+    specsheet: "/specs/fortinet/fortimanager.pdf",
+  };
+
+  const iAnalyzer = findByModel(kept, ["FortiAnalyzer"]) || {
+    vendor: "Fortinet",
+    model: "FortiAnalyzer",
+    desc: "تحلیل و گزارش‌گیری متمرکز لاگ‌ها برای دید بهتر امنیتی و Compliance.",
+    image: "/products/fortinet/fortianalyzer.webp",
+    specsheet: "/specs/fortinet/fortianalyzer.pdf",
+  };
+
+  // ترتیب نهایی (همون که خواستی):
+  // ردیف ۱: 120G, 900G, FortiWeb 1000F
+  // ردیف ۲: Switch, Manager, Analyzer
+  // ردیف آخر: Matrix (وسط)
+  return [i120, i900, iWaf, iSwitch, iManager, iAnalyzer, iMatrix];
 }
 
 // ---------- UI ----------
@@ -78,28 +186,35 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
   const pageTitleRaw = title || vendor?.toUpperCase() || "";
   const pageTitle = toLatinDigits(pageTitleRaw);
 
-  // آواتار برند در هدر: اول webp بعد png
   const avatarWebp = `/avatars/${vendor}.webp`;
   const avatarPng = `/avatars/${vendor}.png`;
 
-  // Canonical (برای Next روی هاستت خوب جواب می‌ده)
-  const canonical = `/products/${vendor}`;
+  const renderItems = normalizeItemsForVendor(vendor, items);
 
-  // JSON-LD (ItemList) برای SEO
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: `${pageTitle} Products`,
-    itemListOrder: "http://schema.org/ItemListOrderAscending",
-    numberOfItems: Array.isArray(items) ? items.length : 0,
-    itemListElement: (Array.isArray(items) ? items : []).map((p, idx) => ({
-      "@type": "ListItem",
-      position: idx + 1,
-      name: toLatinDigits(p?.model || ""),
-      // اگر بعداً صفحهٔ تک‌محصول ساختی، اینجا URLش رو بذار
-      url: canonical,
-    })),
-  };
+  // برای مرکز کردن Fortinet Product Matrix
+  const isFortinet = vendor === "fortinet";
+  const matrixIndex = isFortinet
+    ? renderItems.findIndex((x) => normKey(x?.model) === normKey("Fortinet Product Matrix"))
+    : -1;
+
+  const hasMatrix = matrixIndex >= 0;
+  const total = renderItems.length;
+
+  const lgRemainder = total % 3; // lg:grid-cols-3
+  const mdRemainder = total % 2; // md:grid-cols-2
+
+  const loneLastRowLg = hasMatrix && lgRemainder === 1; // یک کارت تنها در ردیف آخر lg
+  const loneLastRowMd = hasMatrix && mdRemainder === 1; // یک کارت تنها در ردیف آخر md
+
+  const matrixCenterClass = hasMatrix
+    ? cx(
+        // وسط کردن در lg
+        loneLastRowLg ? "lg:col-start-2 lg:col-span-1" : "",
+        // وسط کردن در md (دو ستون)
+        // نکته مهم: md:col-span-2 روی lg هم اثر می‌گذارد، پس حتما lg:col-span-1 دادیم.
+        loneLastRowMd ? "md:col-span-2 lg:col-span-1 md:max-w-xl md:mx-auto" : ""
+      )
+    : "";
 
   return (
     <div data-theme={theme} className={`theme-${theme}`}>
@@ -108,22 +223,6 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
         <meta
           name="description"
           content={intro || `محصولات ${pageTitle} در ساتراس`}
-        />
-
-        {/* Canonical + OG + Twitter (بهبود SEO/Share) */}
-        <link rel="canonical" href={canonical} />
-        <meta property="og:title" content={`${pageTitle} | تجهیزات`} />
-        <meta property="og:description" content={intro || `محصولات ${pageTitle} در ساتراس`} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={canonical} />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={`${pageTitle} | تجهیزات`} />
-        <meta name="twitter:description" content={intro || `محصولات ${pageTitle} در ساتراس`} />
-
-        {/* JSON-LD */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </Head>
 
@@ -166,38 +265,22 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
 
       {/* Grid محصولات */}
       <main className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
-        {items && items.length > 0 ? (
+        {renderItems && renderItems.length > 0 ? (
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map((p, i) => {
+            {renderItems.map((p, i) => {
               const vendorLabel = toLatinDigits(p.vendor || pageTitle);
               const modelLabel = toLatinDigits(p.model || "");
-
               const imgAlt = modelLabel || vendorLabel || pageTitle;
 
-              // ----- Fortinet Product Matrix centering rules -----
-              const matrix = isFortinetMatrix(vendor, p.model);
-
-              // اگر کارت آخر باشه و روی lg (3 ستون) تنها بیافته ته ردیف:
-              const isLast = i === items.length - 1;
-
-              const loneLastRowLg = isLast && items.length % 3 === 1; // فقط یک آیتم در ردیف آخر (lg)
-              const loneLastRowMd = isLast && items.length % 2 === 1; // فقط یک آیتم در ردیف آخر (md)
-
-              // کارت Matrix رو فقط وقتی واقعاً تنها افتاده ته ردیف، وسط کن
-              const matrixCenterClass = matrix
-                ? cx(
-                    loneLastRowLg ? "lg:col-start-2" : "",
-                    // روی md اگر تنهاست، عرض رو محدود کن که واقعاً وسط دیده بشه
-                    loneLastRowMd ? "md:col-span-2 md:max-w-xl md:mx-auto" : ""
-                  )
-                : "";
+              const isMatrixCard =
+                isFortinet && normKey(p?.model) === normKey("Fortinet Product Matrix");
 
               return (
                 <article
                   key={`${vendor}-${i}`}
                   className={cx(
                     "rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition",
-                    matrixCenterClass
+                    isMatrixCard ? matrixCenterClass : ""
                   )}
                 >
                   <div className="p-6 flex flex-col h-full">
@@ -229,7 +312,10 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
 
                     {/* عنوان محصول (مدل) - LTR و چپ‌چین */}
                     <h3
-                      className="latin-fix mt-1 text-lg font-semibold text-slate-900 w-full text-left"
+                      className={cx(
+                        "latin-fix mt-1 font-semibold text-slate-900 w-full text-left",
+                        isMatrixCard ? "text-xl" : "text-lg"
+                      )}
                       lang="en"
                       dir="ltr"
                     >
@@ -238,13 +324,25 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
 
                     {/* توضیح */}
                     {p.desc ? (
-                      <p className="mt-3 text-slate-600 leading-7">{p.desc}</p>
+                      <p
+                        className={cx(
+                          "mt-3 text-slate-600 leading-7",
+                          isMatrixCard ? "text-center" : ""
+                        )}
+                      >
+                        {p.desc}
+                      </p>
                     ) : null}
 
                     <div className="mt-auto" />
 
                     {/* دکمه‌ها */}
-                    <div className="mt-6 flex items-center justify-center gap-6">
+                    <div
+                      className={cx(
+                        "mt-6 flex items-center justify-center gap-6",
+                        isMatrixCard ? "justify-center" : ""
+                      )}
+                    >
                       {p.specsheet && (
                         <a
                           href={p.specsheet}
