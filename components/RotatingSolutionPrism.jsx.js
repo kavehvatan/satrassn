@@ -111,7 +111,7 @@ export default function RotatingSolutionPrism({
             border: 1px solid var(--rsp-bd);
             box-shadow: 0 18px 40px rgba(2, 6, 23, 0.12);
             backface-visibility: hidden;
-            transform: rotateY(calc(var(--rsp-i) * 120deg)) translateZ(var(--rsp-z));
+            transform: rotateX(calc(var(--rsp-i) * 120deg)) translateZ(var(--rsp-z));
           }
 
           .rsp-link {
@@ -142,9 +142,9 @@ export default function RotatingSolutionPrism({
           }
 
           @keyframes rsp-spin {
-            from {
-              transform: rotateY(0deg);
-            }
+  from { transform: rotateX(0deg); }
+  to   { transform: rotateX(-360deg); }
+}
             to {
               transform: rotateY(-360deg);
             }
