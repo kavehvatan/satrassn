@@ -17,7 +17,7 @@ function readProductsJson() {
   }
 }
 
-// فقط برای حالتی که واقعاً رقم فارسی داخل دیتا باشد (اینجا لازم نیست ولی نگه می‌داریم)
+// تبدیل اعداد فارسی/عربی به لاتین (مثلاً F۵ -> F5)
 function toLatinDigits(input) {
   if (input == null) return "";
   const s = String(input);
@@ -65,6 +65,7 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
   const pageTitleRaw = title || vendor?.toUpperCase() || "";
   const pageTitle = toLatinDigits(pageTitleRaw);
 
+  // آواتار برند در هدر: اول webp بعد png
   const avatarWebp = `/avatars/${vendor}.webp`;
   const avatarPng = `/avatars/${vendor}.png`;
 
@@ -78,7 +79,7 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
         />
       </Head>
 
-      {/* فقط داخل همین صفحه: اعداد لاتین را از دستکاری فونت نجات می‌دهیم */}
+      {/* Fix: جلوگیری از فارسی‌شدن اعداد/حروف در متن‌های انگلیسی داخل همین صفحه */}
       <style jsx>{`
         .latin-fix {
           direction: ltr;
@@ -120,9 +121,11 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
         {items && items.length > 0 ? (
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((p, i) => {
-              // دیتا لاتینه؛ اینجا فقط برای safety
               const vendorLabel = toLatinDigits(p.vendor || pageTitle);
               const modelLabel = toLatinDigits(p.model || "");
+
+              // alt همون مدل باشه (لاتین)؛ ولی اگر عکس fail شد، alt رو نمایش نمی‌دیم (img رو hide می‌کنیم)
+              const imgAlt = modelLabel || vendorLabel || pageTitle;
 
               return (
                 <article
@@ -135,14 +138,20 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
                       <div className="mb-6 flex items-center justify-center">
                         <img
                           src={p.image}
-                          alt={modelLabel}
+                          alt={imgAlt}
                           className="h-28 w-auto object-contain"
                           loading="lazy"
+                          lang="en"
+                          dir="ltr"
+                          onError={(e) => {
+                            // اگر تصویر نبود، به‌جای نمایش alt بزرگ (مثل اسکرین‌شات)، خود img رو مخفی کن
+                            e.currentTarget.style.display = "none";
+                          }}
                         />
                       </div>
                     ) : null}
 
-                    {/* Vendor (انگلیسی) */}
+                    {/* برند کوچک (انگلیسی) - LTR و چپ‌چین */}
                     <div
                       className="latin-fix text-xs text-slate-400 w-full text-left"
                       lang="en"
@@ -151,7 +160,7 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
                       {vendorLabel}
                     </div>
 
-                    {/* Model (انگلیسی) */}
+                    {/* عنوان محصول (مدل) - LTR و چپ‌چین */}
                     <h3
                       className="latin-fix mt-1 text-lg font-semibold text-slate-900 w-full text-left"
                       lang="en"
