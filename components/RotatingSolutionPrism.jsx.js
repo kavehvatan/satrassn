@@ -3,11 +3,11 @@ import Link from "next/link";
 
 export default function RotatingSolutionPrism({
   items,
-  hrefBase = "/solutions",        // لینک هر وجه: /solutions/{slug}
-  height = 160,
-  durationSec = 14,
-  z = 230,                        // عمق 3D (کم/زیادش کن اگر لازم شد)
-  bg = "rgba(244,194,31,0.6)",     // مثل کارت‌های فعلی
+  hrefBase = "/solutions",
+  height = 170,
+  durationSec = 16,
+  z = 230,
+  bg = "rgba(244,194,31,0.6)",
   accentColors = ["#14b8a6", "#f4c21f"],
   className = "",
 }) {
@@ -38,7 +38,11 @@ export default function RotatingSolutionPrism({
             const srcWebp = it.logo || `/avatars/${it.slug}.webp`;
             const srcPng = `/avatars/${it.slug}.png`;
             return (
-              <div key={it.slug || it.name || idx} className="rsp-face" style={{ ["--rsp-i"]: idx }}>
+              <div
+                key={it.slug || it.name || idx}
+                className="rsp-face"
+                style={{ ["--rsp-i"]: idx }}
+              >
                 <Link href={href} className="rsp-link" aria-label={it.name} title={it.name}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -103,14 +107,10 @@ export default function RotatingSolutionPrism({
             position: absolute;
             inset: 0;
             border-radius: 24px;
-
             background: var(--rsp-bg);
             border: 1px solid var(--rsp-bd);
             box-shadow: 0 18px 40px rgba(2, 6, 23, 0.12);
-
             backface-visibility: hidden;
-
-            /* 3 وجه: 0 / 120 / 240 */
             transform: rotateY(calc(var(--rsp-i) * 120deg)) translateZ(var(--rsp-z));
           }
 
@@ -150,7 +150,6 @@ export default function RotatingSolutionPrism({
             }
           }
 
-          /* fallback */
           .rsp-fallback {
             display: none;
             position: absolute;

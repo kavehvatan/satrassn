@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import vendors from "../data/vendors";
 import services from "../data/services.json";
-import RotatingSolutionPrism from "../components/RotatingSolutionPrism";
+import RotatingSolutionPrism from "../components/RotatingSolutionPrism.jsx";
 /* =============== SectionTitle =============== */
 function SectionTitle({ as: Tag = "h2", icon = "equipment", className = "", children }) {
   const map = { equipment: "vendors", solutions: "solutions", services: "services" };
