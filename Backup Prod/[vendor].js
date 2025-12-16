@@ -17,37 +17,6 @@ function readProductsJson() {
   }
 }
 
-// تبدیل اعداد فارسی/عربی به لاتین (مثلاً F۵ -> F5)
-function toLatinDigits(input) {
-  if (input == null) return "";
-  const s = String(input);
-
-  const map = {
-    "۰": "0",
-    "۱": "1",
-    "۲": "2",
-    "۳": "3",
-    "۴": "4",
-    "۵": "5",
-    "۶": "6",
-    "۷": "7",
-    "۸": "8",
-    "۹": "9",
-    "٠": "0",
-    "١": "1",
-    "٢": "2",
-    "٣": "3",
-    "٤": "4",
-    "٥": "5",
-    "٦": "6",
-    "٧": "7",
-    "٨": "8",
-    "٩": "9",
-  };
-
-  return s.replace(/[۰-۹٠-٩]/g, (d) => map[d] || d);
-}
-
 // ---------- UI ----------
 function ConsultBtn({ className = "" }) {
   return (
@@ -62,8 +31,7 @@ function ConsultBtn({ className = "" }) {
 }
 
 export default function VendorPage({ vendor, title, intro, items, theme }) {
-  const pageTitleRaw = title || vendor?.toUpperCase() || "";
-  const pageTitle = toLatinDigits(pageTitleRaw);
+  const pageTitle = title || vendor?.toUpperCase();
 
   // آواتار برند در هدر: اول webp بعد png
   const avatarWebp = `/avatars/${vendor}.webp`;
@@ -108,71 +76,64 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
       <main className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
         {items && items.length > 0 ? (
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map((p, i) => {
-              const vendorLabel = toLatinDigits(p.vendor || pageTitle);
-              const modelLabel = toLatinDigits(p.model || "");
-
-              return (
-                <article
-                  key={`${vendor}-${i}`}
-                  className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition"
-                >
-                  <div className="p-6 flex flex-col h-full">
-                    {/* تصویر */}
-                    {p.image ? (
-                      <div className="mb-6 flex items-center justify-center">
-                        <img
-                          src={p.image}
-                          alt={modelLabel}
-                          className="h-28 w-auto object-contain"
-                          loading="lazy"
-                        />
-                      </div>
-                    ) : null}
-
-                    {/* برند کوچک (انگلیسی) - LTR و چپ‌چین */}
-                    <div
-                      className="text-xs text-slate-400 w-full text-left"
-                      dir="ltr"
-                      lang="en"
-                    >
-                      {vendorLabel}
+            {items.map((p, i) => (
+              <article
+                key={`${vendor}-${i}`}
+                className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition"
+              >
+                <div className="p-6 flex flex-col h-full">
+                  {/* تصویر */}
+                  {p.image ? (
+                    <div className="mb-6 flex items-center justify-center">
+                      <img
+                        src={p.image}
+                        alt={p.model || ""}
+                        className="h-28 w-auto object-contain"
+                        loading="lazy"
+                      />
                     </div>
+                  ) : null}
 
-                    {/* عنوان محصول (مدل) - LTR و چپ‌چین */}
-                    <h3
-                      className="mt-1 text-lg font-semibold text-slate-900 w-full text-left"
-                      dir="ltr"
-                      lang="en"
-                    >
-                      {modelLabel}
-                    </h3>
-
-                    {/* توضیح */}
-                    {p.desc ? (
-                      <p className="mt-3 text-slate-600 leading-7">{p.desc}</p>
-                    ) : null}
-
-                    <div className="mt-auto" />
-
-                    {/* دکمه‌ها */}
-                    <div className="mt-6 flex items-center justify-center gap-6">
-                      {p.specsheet && (
-                        <a
-                          href={p.specsheet}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="btn btn-outline"
-                        >
-                          Specsheet
-                        </a>
-                      )}
-                      <ConsultBtn />
-                    </div>
+                  {/* برند کوچک (انگلیسی) - LTR و چپ‌چین */}
+                  <div
+                    className="text-xs text-slate-400 w-full text-left"
+                    dir="ltr"
+                  >
+                    {p.vendor || pageTitle}
                   </div>
-                </article>
-              );
-            })}
+
+                  {/* عنوان محصول (مدل) - LTR و چپ‌چین */}
+                  <h3
+                    className="mt-1 text-lg font-semibold text-slate-900 w-full text-left"
+                    dir="ltr"
+                  >
+                    {p.model}
+                  </h3>
+
+                  {/* توضیح */}
+                  {p.desc ? (
+                    <p className="mt-3 text-slate-600 leading-7">{p.desc}</p>
+                  ) : null}
+
+                  <div className="mt-auto" />
+
+                  {/* دکمه‌ها */}
+                  <div className="mt-6 flex items-center justify-center gap-6">
+                    {p.specsheet && (
+                      <a
+                        href={p.specsheet}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-outline"
+                      >
+                        Specsheet
+                      </a>
+                    )}
+                    <ConsultBtn />
+                  </div>
+                </div>
+              </article>
+            ))}
           </section>
         ) : (
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center">
@@ -220,7 +181,7 @@ export async function getStaticProps(ctx) {
       title: block.title || vendor.toUpperCase(),
       intro: block.intro || "",
       items: Array.isArray(block.items) ? block.items : [],
-      theme: block.theme || block.themeVendor || vendor,
-    },
+      theme: block.theme || block.themeVendor || vendor
+    }
   };
 }
