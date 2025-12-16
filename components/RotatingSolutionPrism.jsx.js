@@ -6,16 +6,26 @@ export default function RotatingSolutionPrism({
   hrefBase = "/solutions",
   height = 170,
   durationSec = 16,
-  z = 230,
   bg = "rgba(244,194,31,0.6)",
   accentColors = ["#14b8a6", "#f4c21f"],
   className = "",
 }) {
-  const data = useMemo(() => (items || []).slice(0, 3), [items]);
-  const [border, setBorder] = useState("#e5e7eb");
+  const data3 = useMemo(() => (items || []).slice(0, 3), [items]);
 
+  // 4 وجه برای چرخش X (مکعبی): 0,1,2,0
+  const faces = useMemo(() => {
+    const a = data3[0] || { name: "", slug: "" };
+    const b = data3[1] || a;
+    const c = data3[2] || a;
+    return [a, b, c, a];
+  }, [data3]);
+
+  const [border, setBorder] = useState("#e5e7eb");
   const pickBorder = () =>
     accentColors[Math.floor(Math.random() * accentColors.length)] || "#e5e7eb";
+
+  // عمق صحیح برای rotateX بر اساس ارتفاع
+  const z = Math.max(40, Math.round(height / 2));
 
   return (
     <div className={`w-full flex justify-center ${className}`}>
@@ -32,17 +42,13 @@ export default function RotatingSolutionPrism({
         onMouseEnter={() => setBorder(pickBorder())}
         onMouseLeave={() => setBorder("#e5e7eb")}
       >
-        <div className="rsp-prism" aria-label="Solutions rotating prism">
-          {data.map((it, idx) => {
+        <div className="rsp-prism" aria-label="Solutions rotating cube">
+          {faces.map((it, idx) => {
             const href = it.href || `${hrefBase}/${it.slug}`;
             const srcWebp = it.logo || `/avatars/${it.slug}.webp`;
             const srcPng = `/avatars/${it.slug}.png`;
             return (
-              <div
-                key={it.slug || it.name || idx}
-                className="rsp-face"
-                style={{ ["--rsp-i"]: idx }}
-              >
+              <div key={`${it.slug}-${idx}`} className="rsp-face" style={{ ["--rsp-i"]: idx }}>
                 <Link href={href} className="rsp-link" aria-label={it.name} title={it.name}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -51,6 +57,7 @@ export default function RotatingSolutionPrism({
                     className="rsp-logo"
                     onError={(e) => (e.currentTarget.src = srcPng)}
                     loading="lazy"
+                    draggable={false}
                   />
                 </Link>
               </div>
@@ -60,18 +67,12 @@ export default function RotatingSolutionPrism({
 
         {/* Reduce motion fallback */}
         <div className="rsp-fallback">
-          {data.map((it, idx) => {
+          {data3.map((it, idx) => {
             const href = it.href || `${hrefBase}/${it.slug}`;
             const srcWebp = it.logo || `/avatars/${it.slug}.webp`;
             const srcPng = `/avatars/${it.slug}.png`;
             return (
-              <Link
-                key={it.slug || it.name || idx}
-                href={href}
-                className="rsp-fallbackItem"
-                aria-label={it.name}
-                title={it.name}
-              >
+              <Link key={`${it.slug}-${idx}`} href={href} className="rsp-fallbackItem">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={srcWebp}
@@ -79,6 +80,7 @@ export default function RotatingSolutionPrism({
                   className="rsp-logo"
                   onError={(e) => (e.currentTarget.src = srcPng)}
                   loading="lazy"
+                  draggable={false}
                 />
               </Link>
             );
@@ -89,17 +91,19 @@ export default function RotatingSolutionPrism({
           .rsp-scene {
             position: relative;
             perspective: 1200px;
-          }
-
-          /* روی هاور مکث کند که کلیک راحت باشد */
-          .rsp-scene:hover .rsp-prism {
-            animation-play-state: paused;
+            border-radius: 24px;
+            overflow: hidden; /* ✅ فقط یک باکس دیده می‌شود */
+            background: var(--rsp-bg);
+            border: 1px solid var(--rsp-bd);
+            box-shadow: 0 18px 40px rgba(2, 6, 23, 0.12);
           }
 
           .rsp-prism {
             position: absolute;
             inset: 0;
             transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            will-change: transform;
             animation: rsp-spin var(--rsp-dur) linear infinite;
           }
 
@@ -107,11 +111,14 @@ export default function RotatingSolutionPrism({
             position: absolute;
             inset: 0;
             border-radius: 24px;
-            background: var(--rsp-bg);
-            border: 1px solid var(--rsp-bd);
-            box-shadow: 0 18px 40px rgba(2, 6, 23, 0.12);
             backface-visibility: hidden;
-            transform: rotateX(calc(var(--rsp-i) * 120deg)) translateZ(var(--rsp-z));
+            -webkit-backface-visibility: hidden;
+
+            /* 4 وجه: 0/90/180/270 درجه روی X */
+            transform: rotateX(calc(var(--rsp-i) * 90deg)) translateZ(var(--rsp-z));
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
 
           .rsp-link {
@@ -134,19 +141,15 @@ export default function RotatingSolutionPrism({
             max-width: 60%;
             object-fit: contain;
             filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.18));
-            transition: transform 180ms ease;
+            transform: translateZ(0); /* ✅ کمک به جلوگیری از پرپر */
           }
 
-          .rsp-scene:hover .rsp-logo {
-            transform: scale(1.04) translateY(-2px);
-          }
-
-          .rsp-scene {
-  overflow: hidden;      /* ✅ جلوی اون تکه‌های زرد بالا/پایین رو می‌گیره */
-  border-radius: 24px;   /* ✅ برش مثل کارت */
-}
+          @keyframes rsp-spin {
+            from {
+              transform: rotateX(0deg);
+            }
             to {
-              transform: rotateY(-360deg);
+              transform: rotateX(-360deg);
             }
           }
 
@@ -155,13 +158,12 @@ export default function RotatingSolutionPrism({
             position: absolute;
             inset: 0;
             gap: 12px;
+            background: transparent;
           }
+
           .rsp-fallbackItem {
             flex: 1;
             border-radius: 24px;
-            background: var(--rsp-bg);
-            border: 1px solid var(--rsp-bd);
-            box-shadow: 0 18px 40px rgba(2, 6, 23, 0.12);
             display: flex;
             align-items: center;
             justify-content: center;
