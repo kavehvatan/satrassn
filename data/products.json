@@ -712,24 +712,24 @@
     "items": [
       {
         "vendor": "Fortinet",
-        "model": "FortiGate 60F",
-        "desc": "فایروال محبوب برای شعب کوچک/SMB با NGFW و SD-WAN.",
-        "image": "/products/fortinet/fortigate-60f.webp",
-        "specsheet": "/specs/fortinet/fortigate-60f.pdf"
+        "model": "FortiGate 120G",
+        "desc": "NGFW نسل جدید برای شعب/SMB و سازمان‌های متوسط با عملکرد بهتر و امکانات Security Fabric.",
+        "image": "/products/fortinet/fortigate-120g.webp",
+        "specsheet": "/specs/fortinet/fortigate-120g.pdf"
       },
       {
         "vendor": "Fortinet",
-        "model": "FortiGate 100F",
-        "desc": "فایروال محبوب شعب/سازمان برای NGFW + SD-WAN با ارزش خرید بالا.",
-        "image": "/products/fortinet/fortigate-100f.webp",
-        "specsheet": "/specs/fortinet/fortigate-100f.pdf"
+        "model": "FortiGate 900G",
+        "desc": "NGFW قدرتمند برای دیتاسنتر/سازمان‌های بزرگ با Throughput بالا و ظرفیت بیشتر برای ترافیک‌های سنگین.",
+        "image": "/products/fortinet/fortigate-900g.webp",
+        "specsheet": "/specs/fortinet/fortigate-900g.pdf"
       },
       {
         "vendor": "Fortinet",
-        "model": "FortiGate 200F",
-        "desc": "مدل قوی‌تر برای سازمان‌های متوسط با توان پردازشی بالاتر و ظرفیت بیشتر.",
-        "image": "/products/fortinet/fortigate-200f.webp",
-        "specsheet": "/specs/fortinet/fortigate-200f.pdf"
+        "model": "FortiWeb 1000F",
+        "desc": "WAF سخت‌افزاری برای محافظت از وب‌اپلیکیشن‌ها و API (WAAP) با قابلیت‌های امنیتی پیشرفته.",
+        "image": "/products/fortinet/fortiweb-1000f.webp",
+        "specsheet": "/specs/fortinet/fortiweb-1000f.pdf"
       },
       {
         "vendor": "Fortinet",
@@ -751,6 +751,13 @@
         "desc": "سوئیچ‌های سازمانی برای Access/Distribution با یکپارچگی در Fabric و مدیریت.",
         "image": "/products/fortinet/fortiswitch.webp",
         "specsheet": "/specs/fortinet/fortiswitch.pdf"
+      },
+      {
+        "vendor": "Fortinet",
+        "model": "Fortinet Product Matrix",
+        "desc": "نمای کلی خانواده محصولات Fortinet (Firewall / WAF / Management / Switching) برای مقایسه سریع و انتخاب صحیح.",
+        "image": "/products/fortinet/product-matrix.webp",
+        "specsheet": "/specs/fortinet/product-matrix.pdf"
       }
     ]
   }

@@ -48,19 +48,6 @@ function toLatinDigits(input) {
   return s.replace(/[۰-۹٠-٩]/g, (d) => map[d] || d);
 }
 
-function norm(s) {
-  return String(s || "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ");
-}
-
-function isFortinetMatrix(vendor, model) {
-  if (String(vendor || "").toLowerCase() !== "fortinet") return false;
-  const m = norm(toLatinDigits(model));
-  return m.includes("fortinet product matrix") || m === "product matrix" || m.includes("product matrix");
-}
-
 // ---------- UI ----------
 function ConsultBtn({ className = "" }) {
   return (
@@ -82,25 +69,6 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
   const avatarWebp = `/avatars/${vendor}.webp`;
   const avatarPng = `/avatars/${vendor}.png`;
 
-  // Canonical (برای Next روی هاستت خوب جواب می‌ده)
-  const canonical = `/products/${vendor}`;
-
-  // JSON-LD (ItemList) برای SEO
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: `${pageTitle} Products`,
-    itemListOrder: "http://schema.org/ItemListOrderAscending",
-    numberOfItems: Array.isArray(items) ? items.length : 0,
-    itemListElement: (Array.isArray(items) ? items : []).map((p, idx) => ({
-      "@type": "ListItem",
-      position: idx + 1,
-      name: toLatinDigits(p?.model || ""),
-      // اگر بعداً صفحهٔ تک‌محصول ساختی، اینجا URLش رو بذار
-      url: canonical,
-    })),
-  };
-
   return (
     <div data-theme={theme} className={`theme-${theme}`}>
       <Head>
@@ -108,22 +76,6 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
         <meta
           name="description"
           content={intro || `محصولات ${pageTitle} در ساتراس`}
-        />
-
-        {/* Canonical + OG + Twitter (بهبود SEO/Share) */}
-        <link rel="canonical" href={canonical} />
-        <meta property="og:title" content={`${pageTitle} | تجهیزات`} />
-        <meta property="og:description" content={intro || `محصولات ${pageTitle} در ساتراس`} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={canonical} />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={`${pageTitle} | تجهیزات`} />
-        <meta name="twitter:description" content={intro || `محصولات ${pageTitle} در ساتراس`} />
-
-        {/* JSON-LD */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </Head>
 
@@ -172,33 +124,13 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
               const vendorLabel = toLatinDigits(p.vendor || pageTitle);
               const modelLabel = toLatinDigits(p.model || "");
 
+              // alt همون مدل باشه (لاتین)؛ ولی اگر عکس fail شد، alt رو نمایش نمی‌دیم (img رو hide می‌کنیم)
               const imgAlt = modelLabel || vendorLabel || pageTitle;
-
-              // ----- Fortinet Product Matrix centering rules -----
-              const matrix = isFortinetMatrix(vendor, p.model);
-
-              // اگر کارت آخر باشه و روی lg (3 ستون) تنها بیافته ته ردیف:
-              const isLast = i === items.length - 1;
-
-              const loneLastRowLg = isLast && items.length % 3 === 1; // فقط یک آیتم در ردیف آخر (lg)
-              const loneLastRowMd = isLast && items.length % 2 === 1; // فقط یک آیتم در ردیف آخر (md)
-
-              // کارت Matrix رو فقط وقتی واقعاً تنها افتاده ته ردیف، وسط کن
-              const matrixCenterClass = matrix
-                ? cx(
-                    loneLastRowLg ? "lg:col-start-2" : "",
-                    // روی md اگر تنهاست، عرض رو محدود کن که واقعاً وسط دیده بشه
-                    loneLastRowMd ? "md:col-span-2 md:max-w-xl md:mx-auto" : ""
-                  )
-                : "";
 
               return (
                 <article
                   key={`${vendor}-${i}`}
-                  className={cx(
-                    "rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition",
-                    matrixCenterClass
-                  )}
+                  className="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition"
                 >
                   <div className="p-6 flex flex-col h-full">
                     {/* تصویر */}
@@ -212,6 +144,7 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
                           lang="en"
                           dir="ltr"
                           onError={(e) => {
+                            // اگر تصویر نبود، به‌جای نمایش alt بزرگ (مثل اسکرین‌شات)، خود img رو مخفی کن
                             e.currentTarget.style.display = "none";
                           }}
                         />
