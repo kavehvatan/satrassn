@@ -17,7 +17,7 @@ function readProductsJson() {
   }
 }
 
-// تبدیل اعداد فارسی/عربی به لاتین (مثلاً F۵ -> F5)
+// فقط برای حالتی که واقعاً رقم فارسی داخل دیتا باشد (اینجا لازم نیست ولی نگه می‌داریم)
 function toLatinDigits(input) {
   if (input == null) return "";
   const s = String(input);
@@ -65,7 +65,6 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
   const pageTitleRaw = title || vendor?.toUpperCase() || "";
   const pageTitle = toLatinDigits(pageTitleRaw);
 
-  // آواتار برند در هدر: اول webp بعد png
   const avatarWebp = `/avatars/${vendor}.webp`;
   const avatarPng = `/avatars/${vendor}.png`;
 
@@ -78,6 +77,18 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
           content={intro || `محصولات ${pageTitle} در ساتراس`}
         />
       </Head>
+
+      {/* فقط داخل همین صفحه: اعداد لاتین را از دستکاری فونت نجات می‌دهیم */}
+      <style jsx>{`
+        .latin-fix {
+          direction: ltr;
+          unicode-bidi: plaintext;
+          font-feature-settings: "ss01" 0, "locl" 0 !important;
+          font-variant-numeric: normal !important;
+          font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+            Roboto, Arial, sans-serif !important;
+        }
+      `}</style>
 
       {/* Hero */}
       <header className="bg-gradient-to-b from-slate-900 to-slate-800 text-white">
@@ -109,6 +120,7 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
         {items && items.length > 0 ? (
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((p, i) => {
+              // دیتا لاتینه؛ اینجا فقط برای safety
               const vendorLabel = toLatinDigits(p.vendor || pageTitle);
               const modelLabel = toLatinDigits(p.model || "");
 
@@ -130,20 +142,20 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
                       </div>
                     ) : null}
 
-                    {/* برند کوچک (انگلیسی) - LTR و چپ‌چین */}
+                    {/* Vendor (انگلیسی) */}
                     <div
-                      className="text-xs text-slate-400 w-full text-left"
-                      dir="ltr"
+                      className="latin-fix text-xs text-slate-400 w-full text-left"
                       lang="en"
+                      dir="ltr"
                     >
                       {vendorLabel}
                     </div>
 
-                    {/* عنوان محصول (مدل) - LTR و چپ‌چین */}
+                    {/* Model (انگلیسی) */}
                     <h3
-                      className="mt-1 text-lg font-semibold text-slate-900 w-full text-left"
-                      dir="ltr"
+                      className="latin-fix mt-1 text-lg font-semibold text-slate-900 w-full text-left"
                       lang="en"
+                      dir="ltr"
                     >
                       {modelLabel}
                     </h3>
@@ -162,7 +174,9 @@ export default function VendorPage({ vendor, title, intro, items, theme }) {
                           href={p.specsheet}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="btn btn-outline"
+                          className="btn btn-outline latin-fix"
+                          lang="en"
+                          dir="ltr"
                         >
                           Specsheet
                         </a>
