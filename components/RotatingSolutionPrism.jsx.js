@@ -141,9 +141,9 @@ export default function RotatingSolutionPrism({
             transform: scale(1.04) translateY(-2px);
           }
 
-          @keyframes rsp-spin {
-  from { transform: rotateX(0deg); }
-  to   { transform: rotateX(-360deg); }
+          .rsp-scene {
+  overflow: hidden;      /* ✅ جلوی اون تکه‌های زرد بالا/پایین رو می‌گیره */
+  border-radius: 24px;   /* ✅ برش مثل کارت */
 }
             to {
               transform: rotateY(-360deg);
