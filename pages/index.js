@@ -178,9 +178,9 @@ function ServiceCard({ title, icon, href }) {
 
 /* ===== محافظت از داده: داده‌ها ===== */
 const SOLUTIONS = [
-  { name: "Veeam", slug: "veeam", offsetX: -70 },
-  { name: "Veritas", slug: "veritas", offsetX: -45 },
-  { name: "Commvault", slug: "commvault", offsetX: -35 },
+  { name: "Veeam", slug: "veeam", offsetX: -78 },
+  { name: "NetBackup", slug: "netbackup", offsetX: -52 },
+  { name: "Commvault", slug: "commvault", offsetX: -42 },
 ];
 
 /* =============== Page =============== */
@@ -334,7 +334,6 @@ export default function Home() {
   hrefBase="/services"   // ✅ اینجا درست شد
   height={170}
   durationSec={16}
-  z={60}
  />
         </div>
       </section>
