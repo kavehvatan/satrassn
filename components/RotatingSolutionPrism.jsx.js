@@ -1,9 +1,17 @@
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 
+function joinPath(base, slug) {
+  const b = String(base || "").replace(/\/+$/, "");
+  const s = String(slug || "").replace(/^\/+/, "");
+  if (!b) return `/${s}`;
+  if (!s) return b;
+  return `${b}/${s}`;
+}
+
 export default function RotatingSolutionPrism({
   items,
-  hrefBase = "/solutions",
+  hrefBase = "/services", // ✅ مثل نسخه قدیمی که از index دیدیم
   height = 170,
   durationSec = 16,
   bg = "rgba(244,194,31,0.6)",
@@ -30,7 +38,6 @@ export default function RotatingSolutionPrism({
   const imgTransform = (it) => {
     const ox = Number(it?.offsetX || 0);
     const oy = Number(it?.offsetY || 0);
-    // translateZ(0) برای جلوگیری از پرپر + قابل تنظیم برای هر لوگو
     return `translateX(${ox}px) translateY(${oy}px) translateZ(0)`;
   };
 
@@ -51,26 +58,26 @@ export default function RotatingSolutionPrism({
       >
         <div className="rsp-prism" aria-label="Solutions rotating cube">
           {faces.map((it, idx) => {
-            const href = it.href || `${hrefBase}/${it.slug}`;
-            const srcWebp = it.logo || `/avatars/${it.slug}.webp`;
-            const srcPng = `/avatars/${it.slug}.png`;
+            const href = it?.href ? String(it.href) : joinPath(hrefBase, it?.slug);
+            const srcWebp = it?.logo || `/avatars/${it?.slug}.webp`;
+            const srcPng = `/avatars/${it?.slug}.png`;
 
             return (
               <div
-                key={`${it.slug || "x"}-${idx}`}
+                key={`${it?.slug || "x"}-${idx}`}
                 className="rsp-face"
                 style={{ ["--rsp-i"]: idx }}
               >
                 <Link
                   href={href}
                   className="rsp-link"
-                  aria-label={it.name}
-                  title={it.name}
+                  aria-label={it?.name}
+                  title={it?.name}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={srcWebp}
-                    alt={it.name}
+                    alt={it?.name || ""}
                     className="rsp-logo"
                     style={{ transform: imgTransform(it) }}
                     onError={(e) => (e.currentTarget.src = srcPng)}
@@ -86,20 +93,22 @@ export default function RotatingSolutionPrism({
         {/* Reduce motion fallback */}
         <div className="rsp-fallback">
           {data3.map((it, idx) => {
-            const href = it.href || `${hrefBase}/${it.slug}`;
-            const srcWebp = it.logo || `/avatars/${it.slug}.webp`;
-            const srcPng = `/avatars/${it.slug}.png`;
+            const href = it?.href ? String(it.href) : joinPath(hrefBase, it?.slug);
+            const srcWebp = it?.logo || `/avatars/${it?.slug}.webp`;
+            const srcPng = `/avatars/${it?.slug}.png`;
 
             return (
               <Link
-                key={`${it.slug || "x"}-${idx}`}
+                key={`${it?.slug || "x"}-${idx}`}
                 href={href}
                 className="rsp-fallbackItem"
+                aria-label={it?.name}
+                title={it?.name}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={srcWebp}
-                  alt={it.name}
+                  alt={it?.name || ""}
                   className="rsp-logo"
                   style={{ transform: imgTransform(it) }}
                   onError={(e) => (e.currentTarget.src = srcPng)}
@@ -116,7 +125,7 @@ export default function RotatingSolutionPrism({
             position: relative;
             perspective: 1200px;
             border-radius: 24px;
-            overflow: hidden; /* ✅ فقط یک باکس دیده می‌شود */
+            overflow: hidden;
             background: var(--rsp-bg);
             border: 1px solid var(--rsp-bd);
             box-shadow: 0 18px 40px rgba(2, 6, 23, 0.12);
@@ -137,10 +146,7 @@ export default function RotatingSolutionPrism({
             border-radius: 24px;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
-
-            /* 4 وجه: 0/90/180/270 درجه روی X */
-            transform: rotateX(calc(var(--rsp-i) * 90deg))
-              translateZ(var(--rsp-z));
+            transform: rotateX(calc(var(--rsp-i) * 90deg)) translateZ(var(--rsp-z));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -166,7 +172,6 @@ export default function RotatingSolutionPrism({
             max-width: 60%;
             object-fit: contain;
             filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.18));
-            /* transform اینجا عمداً نیست چون inline میاد و offsetX/Y رو هم اعمال می‌کنه */
           }
 
           @keyframes rsp-spin {
