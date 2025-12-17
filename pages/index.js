@@ -178,9 +178,9 @@ function ServiceCard({ title, icon, href }) {
 
 /* ===== محافظت از داده: داده‌ها ===== */
 const SOLUTIONS = [
-  { name: "Veeam", slug: "veeam", offsetX: -78 },
-  { name: "NetBackup", slug: "netbackup", offsetX: -52 },
-  { name: "Commvault", slug: "commvault", offsetX: -42 },
+ { name: "Veeam", slug: "veeam", offsetX: -78, scale: 1.0 },
+  { name: "Veritas", slug: "veritas", offsetX: -52, scale: 1.8 }, // ✅ بزرگ‌تر
+  { name: "Commvault", slug: "commvault", offsetX: -42, scale: 1.0 },
 ];
 
 /* =============== Page =============== */

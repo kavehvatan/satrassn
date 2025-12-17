@@ -37,8 +37,9 @@ export default function RotatingSolutionPrism({
 
   const imgTransform = (it) => {
     const ox = Number(it?.offsetX || 0);
-    const oy = Number(it?.offsetY || 0);
-    return `translateX(${ox}px) translateY(${oy}px) translateZ(0)`;
+  const oy = Number(it?.offsetY || 0);
+  const sc = Number(it?.scale || 1);
+  return `translateX(${ox}px) translateY(${oy}px) scale(${sc}) translateZ(0)`;
   };
 
   return (
