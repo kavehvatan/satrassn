@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import vendors from "../data/vendors";
 import services from "../data/services.json";
-import RotatingSolutionPrism from "../components/RotatingSolutionPrism.jsx";
+
 /* =============== SectionTitle =============== */
 function SectionTitle({ as: Tag = "h2", icon = "equipment", className = "", children }) {
   const map = { equipment: "vendors", solutions: "solutions", services: "services" };
@@ -176,12 +176,41 @@ function ServiceCard({ title, icon, href }) {
   );
 }
 
-/* ===== محافظت از داده: داده‌ها ===== */
+/* ===== محافظت از داده: کارت‌ها و لینک‌ها ===== */
+
 const SOLUTIONS = [
- { name: "Veeam", slug: "veeam", offsetX: -78, scale: 1.0 },
-  { name: "Veritas", slug: "veritas", offsetX: -52, scale: 1.8 }, // ✅ بزرگ‌تر
-  { name: "Commvault", slug: "commvault", offsetX: -42, scale: 1.0 },
+  { name: "Commvault", slug: "commvault" },
+  { name: "NetBackup", slug: "netbackup" },
+  { name: "Veeam", slug: "veeam" },
 ];
+
+function SolutionCard({ name, slug }) {
+  const [border, setBorder] = useState("#e5e7eb");
+  const bg = "rgba(244,194,31,0.6)";
+  const fg = "#000";
+  const href = `/services/${slug}`;
+
+  return (
+    <Link href={href} className="w-full max-w-[520px]">
+      <div
+        onMouseEnter={() =>
+          setBorder(LOGO_COLORS[Math.floor(Math.random() * LOGO_COLORS.length)])
+        }
+        onMouseLeave={() => setBorder("#e5e7eb")}
+        className="group flex flex-col items-center justify-center gap-4 p-5 border rounded-2xl hover:shadow-lg transition text-center w-full mx-auto h-[140px] cursor-pointer select-none"
+        style={{ borderColor: border, background: bg, color: fg }}
+      >
+        <img
+          src={`/avatars/${slug}.webp`}
+          onError={(e) => (e.currentTarget.src = `/avatars/${slug}.png`)}
+          alt={name}
+          className="w-20 h-20 md:w-24 md:h-24 object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,.18)] transition-transform duration-200 group-hover:scale-105 group-hover:-translate-y-0.5"
+        />
+      </div>
+    </Link>
+  );
+}
+
 
 /* =============== Page =============== */
 export default function Home() {
@@ -225,7 +254,9 @@ export default function Home() {
       });
     };
 
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
     if (prefersReduced) {
       setHeroOpacity(1);
       return;
@@ -254,7 +285,9 @@ export default function Home() {
               <span style={{ color: YELLOW }}>دقت مهندسی</span>
             </h1>
 
-            <p className="mt-4 text-gray-300">از مشاوره تا پشتیبانی، درکنار شما.</p>
+            <p className="mt-4 text-gray-300">
+              از مشاوره تا پشتیبانی، درکنار شما.
+            </p>
 
             <div className="mt-6 flex gap-3">
               <a
@@ -327,14 +360,11 @@ export default function Home() {
           <SectionTitle as="h2" icon="solutions">
             محافظت از داده
           </SectionTitle>
-
-          {/* جایگزین 3 کارت با یک باکس 3D چرخان */}
-       <RotatingSolutionPrism
- items={SOLUTIONS}
-  hrefBase="/services"   // ✅ اینجا درست شد
-  height={170}
-  durationSec={16}
- />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+            {SOLUTIONS.map((s) => (
+              <SolutionCard key={s.slug} {...s} />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -400,7 +430,10 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a href="/services/consulting-design" className="hover:text-white">
+                  <a
+                    href="/services/consulting-design"
+                    className="hover:text-white"
+                  >
                     مشاوره و طراحی
                   </a>
                 </li>
@@ -431,7 +464,8 @@ export default function Home() {
                 </li>
                 <li>
                   <a href="/news" className="hover:text-white">
-                    تازه‌ها <span className="text-white/60">(اخبار و مقالات)</span>
+                    تازه‌ها{" "}
+                    <span className="text-white/60">(اخبار و مقالات)</span>
                   </a>
                 </li>
               </ul>
