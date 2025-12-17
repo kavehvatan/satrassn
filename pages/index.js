@@ -330,11 +330,11 @@ export default function Home() {
 
           {/* جایگزین 3 کارت با یک باکس 3D چرخان */}
        <RotatingSolutionPrism
-  items={SOLUTIONS}
-  hrefBase="/solutions"
+ items={SOLUTIONS}
+  hrefBase="/services"   // ✅ اینجا درست شد
   height={170}
   durationSec={16}
-  z={60}   // ✅ مهم: برای rotateX باید کوچیک باشه (حدود 50 تا 80)
+  z={60}
  />
         </div>
       </section>
