@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+// components/RotatingSolutionPrism.jsx
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 function joinPath(base, slug) {
@@ -11,12 +12,15 @@ function joinPath(base, slug) {
 
 export default function RotatingSolutionPrism({
   items,
-  hrefBase = "/services", // ✅ مثل نسخه قدیمی که از index دیدیم
+  hrefBase = "/services",
   height = 170,
   durationSec = 16,
   bg = "rgba(244,194,31,0.6)",
   accentColors = ["#14b8a6", "#f4c21f"],
   className = "",
+  // ✅ برای اینکه موبایل عمودی همیشه “نشان بده” (به جای 3D پرپر/غیب)
+  disable3DOnSmallScreens = true,
+  smallScreenMaxWidth = 520,
 }) {
   const data3 = useMemo(() => (items || []).slice(0, 3), [items]);
 
@@ -35,11 +39,31 @@ export default function RotatingSolutionPrism({
   // عمق صحیح برای rotateX بر اساس ارتفاع
   const z = Math.max(40, Math.round(height / 2));
 
+  // ✅ تشخیص موبایل/صفحه کوچک (برای خاموش کردن 3D در صورت نیاز)
+  const [forceFallback, setForceFallback] = useState(false);
+
+  useEffect(() => {
+    if (!disable3DOnSmallScreens) return;
+
+    const onResize = () => {
+      try {
+        const w = window.innerWidth || 9999;
+        const isSmall = w <= smallScreenMaxWidth;
+        setForceFallback(isSmall);
+      } catch {}
+    };
+
+    onResize();
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => window.removeEventListener("resize", onResize);
+  }, [disable3DOnSmallScreens, smallScreenMaxWidth]);
+
   const imgTransform = (it) => {
     const ox = Number(it?.offsetX || 0);
-  const oy = Number(it?.offsetY || 0);
-  const sc = Number(it?.scale || 1);
-  return `translateX(${ox}px) translateY(${oy}px) scale(${sc}) translateZ(0)`;
+    const oy = Number(it?.offsetY || 0);
+    const sc = Number(it?.scale || 1);
+    // ✅ translateZ(0) برای قفل GPU و جلوگیری از پرپر
+    return `translateX(${ox}px) translateY(${oy}px) scale(${sc}) translateZ(0)`;
   };
 
   return (
@@ -57,42 +81,41 @@ export default function RotatingSolutionPrism({
         onMouseEnter={() => setBorder(pickBorder())}
         onMouseLeave={() => setBorder("#e5e7eb")}
       >
-        <div className="rsp-prism" aria-label="Solutions rotating cube">
-          {faces.map((it, idx) => {
-            const href = it?.href ? String(it.href) : joinPath(hrefBase, it?.slug);
-            const srcWebp = it?.logo || `/avatars/${it?.slug}.webp`;
-            const srcPng = `/avatars/${it?.slug}.png`;
+        {/* ✅ 3D prism */}
+        {!forceFallback && (
+          <div className="rsp-prism" aria-label="Solutions rotating cube">
+            {faces.map((it, idx) => {
+              const href = it?.href ? String(it.href) : joinPath(hrefBase, it?.slug);
+              const srcWebp = it?.logo || `/avatars/${it?.slug}.webp`;
+              const srcPng = `/avatars/${it?.slug}.png`;
 
-            return (
-              <div
-                key={`${it?.slug || "x"}-${idx}`}
-                className="rsp-face"
-                style={{ ["--rsp-i"]: idx }}
-              >
-                <Link
-                  href={href}
-                  className="rsp-link"
-                  aria-label={it?.name}
-                  title={it?.name}
+              return (
+                <div
+                  key={`${it?.slug || "x"}-${idx}`}
+                  className="rsp-face"
+                  style={{ ["--rsp-i"]: idx }}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={srcWebp}
-                    alt={it?.name || ""}
-                    className="rsp-logo"
-                    style={{ transform: imgTransform(it) }}
-                    onError={(e) => (e.currentTarget.src = srcPng)}
-                    loading="lazy"
-                    draggable={false}
-                  />
-                </Link>
-              </div>
-            );
-          })}
-        </div>
+                  <Link href={href} className="rsp-link" aria-label={it?.name} title={it?.name}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={srcWebp}
+                      alt={it?.name || ""}
+                      className="rsp-logo"
+                      style={{ transform: imgTransform(it) }}
+                      onError={(e) => (e.currentTarget.src = srcPng)}
+                      loading="eager"
+                      decoding="async"
+                      draggable={false}
+                    />
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
-        {/* Reduce motion fallback */}
-        <div className="rsp-fallback">
+        {/* ✅ Fallback (reduce motion + small screens) */}
+        <div className={`rsp-fallback ${forceFallback ? "rsp-fallback--show" : ""}`}>
           {data3.map((it, idx) => {
             const href = it?.href ? String(it.href) : joinPath(hrefBase, it?.slug);
             const srcWebp = it?.logo || `/avatars/${it?.slug}.webp`;
@@ -113,7 +136,8 @@ export default function RotatingSolutionPrism({
                   className="rsp-logo"
                   style={{ transform: imgTransform(it) }}
                   onError={(e) => (e.currentTarget.src = srcPng)}
-                  loading="lazy"
+                  loading="eager"
+                  decoding="async"
                   draggable={false}
                 />
               </Link>
@@ -130,6 +154,12 @@ export default function RotatingSolutionPrism({
             background: var(--rsp-bg);
             border: 1px solid var(--rsp-bd);
             box-shadow: 0 18px 40px rgba(2, 6, 23, 0.12);
+
+            /* ✅ iOS/Safari fixes for 3D + radius + overflow */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            isolation: isolate;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
           }
 
           .rsp-prism {
@@ -147,7 +177,10 @@ export default function RotatingSolutionPrism({
             border-radius: 24px;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
-            transform: rotateX(calc(var(--rsp-i) * 90deg)) translateZ(var(--rsp-z));
+
+            /* ✅ rotateX faces + GPU nudge */
+            transform: rotateX(calc(var(--rsp-i) * 90deg)) translateZ(var(--rsp-z)) translateZ(0);
+
             display: flex;
             align-items: center;
             justify-content: center;
@@ -192,6 +225,10 @@ export default function RotatingSolutionPrism({
             background: transparent;
           }
 
+          .rsp-fallback--show {
+            display: flex;
+          }
+
           .rsp-fallbackItem {
             flex: 1;
             border-radius: 24px;
@@ -200,6 +237,7 @@ export default function RotatingSolutionPrism({
             justify-content: center;
           }
 
+          /* prefers-reduced-motion: always fallback */
           @media (prefers-reduced-motion: reduce) {
             .rsp-prism {
               display: none;
