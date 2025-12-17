@@ -18,7 +18,6 @@ export default function RotatingSolutionPrism({
   bg = "rgba(244,194,31,0.6)",
   accentColors = ["#14b8a6", "#f4c21f"],
   className = "",
-  // ✅ برای اینکه موبایل عمودی همیشه “نشان بده” (به جای 3D پرپر/غیب)
   disable3DOnSmallScreens = true,
   smallScreenMaxWidth = 520,
 }) {
@@ -36,21 +35,18 @@ export default function RotatingSolutionPrism({
   const pickBorder = () =>
     accentColors[Math.floor(Math.random() * accentColors.length)] || "#e5e7eb";
 
-  // عمق صحیح برای rotateX بر اساس ارتفاع
   const z = Math.max(40, Math.round(height / 2));
 
-  // ✅ تشخیص موبایل/صفحه کوچک (برای خاموش کردن 3D در صورت نیاز)
+  // ✅ روی موبایل/صفحه کوچک: به جای 3D، یک لوگو در مرکز + fade
   const [forceFallback, setForceFallback] = useState(false);
+  const [fallbackIdx, setFallbackIdx] = useState(0);
 
   useEffect(() => {
     if (!disable3DOnSmallScreens) return;
 
     const onResize = () => {
-      try {
-        const w = window.innerWidth || 9999;
-        const isSmall = w <= smallScreenMaxWidth;
-        setForceFallback(isSmall);
-      } catch {}
+      const w = window.innerWidth || 9999;
+      setForceFallback(w <= smallScreenMaxWidth);
     };
 
     onResize();
@@ -58,13 +54,36 @@ export default function RotatingSolutionPrism({
     return () => window.removeEventListener("resize", onResize);
   }, [disable3DOnSmallScreens, smallScreenMaxWidth]);
 
+  useEffect(() => {
+    if (!forceFallback) return;
+
+    const prefersReduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")
+      ?.matches;
+
+    if (prefersReduced) {
+      setFallbackIdx(0);
+      return;
+    }
+
+    const stepMs = Math.max(2200, Math.round((durationSec * 1000) / 3));
+    const t = setInterval(() => {
+      setFallbackIdx((v) => (v + 1) % Math.max(1, data3.length));
+    }, stepMs);
+
+    return () => clearInterval(t);
+  }, [forceFallback, durationSec, data3.length]);
+
   const imgTransform = (it) => {
     const ox = Number(it?.offsetX || 0);
     const oy = Number(it?.offsetY || 0);
     const sc = Number(it?.scale || 1);
-    // ✅ translateZ(0) برای قفل GPU و جلوگیری از پرپر
     return `translateX(${ox}px) translateY(${oy}px) scale(${sc}) translateZ(0)`;
   };
+
+  const active = data3[fallbackIdx] || data3[0] || { name: "", slug: "" };
+  const activeHref = active?.href ? String(active.href) : joinPath(hrefBase, active?.slug);
+  const activeWebp = active?.logo || `/avatars/${active?.slug}.webp`;
+  const activePng = `/avatars/${active?.slug}.png`;
 
   return (
     <div className={`w-full flex justify-center ${className}`}>
@@ -81,7 +100,7 @@ export default function RotatingSolutionPrism({
         onMouseEnter={() => setBorder(pickBorder())}
         onMouseLeave={() => setBorder("#e5e7eb")}
       >
-        {/* ✅ 3D prism */}
+        {/* 3D prism */}
         {!forceFallback && (
           <div className="rsp-prism" aria-label="Solutions rotating cube">
             {faces.map((it, idx) => {
@@ -114,36 +133,23 @@ export default function RotatingSolutionPrism({
           </div>
         )}
 
-        {/* ✅ Fallback (reduce motion + small screens) */}
-        <div className={`rsp-fallback ${forceFallback ? "rsp-fallback--show" : ""}`}>
-          {data3.map((it, idx) => {
-            const href = it?.href ? String(it.href) : joinPath(hrefBase, it?.slug);
-            const srcWebp = it?.logo || `/avatars/${it?.slug}.webp`;
-            const srcPng = `/avatars/${it?.slug}.png`;
-
-            return (
-              <Link
-                key={`${it?.slug || "x"}-${idx}`}
-                href={href}
-                className="rsp-fallbackItem"
-                aria-label={it?.name}
-                title={it?.name}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={srcWebp}
-                  alt={it?.name || ""}
-                  className="rsp-logo"
-                  style={{ transform: imgTransform(it) }}
-                  onError={(e) => (e.currentTarget.src = srcPng)}
-                  loading="eager"
-                  decoding="async"
-                  draggable={false}
-                />
-              </Link>
-            );
-          })}
-        </div>
+        {/* ✅ Mobile fallback: فقط یک لوگو وسط + fade */}
+        {forceFallback && (
+          <Link href={activeHref} className="rsp-fallbackOne" aria-label={active?.name} title={active?.name}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              key={`${active?.slug || "x"}-${fallbackIdx}`} // ✅ برای اجرای fade در هر سوییچ
+              src={activeWebp}
+              alt={active?.name || ""}
+              className="rsp-logo rsp-fade"
+              style={{ transform: imgTransform(active) }}
+              onError={(e) => (e.currentTarget.src = activePng)}
+              loading="eager"
+              decoding="async"
+              draggable={false}
+            />
+          </Link>
+        )}
 
         <style jsx>{`
           .rsp-scene {
@@ -155,7 +161,7 @@ export default function RotatingSolutionPrism({
             border: 1px solid var(--rsp-bd);
             box-shadow: 0 18px 40px rgba(2, 6, 23, 0.12);
 
-            /* ✅ iOS/Safari fixes for 3D + radius + overflow */
+            /* iOS/Safari fixes */
             transform: translateZ(0);
             -webkit-transform: translateZ(0);
             isolation: isolate;
@@ -177,10 +183,7 @@ export default function RotatingSolutionPrism({
             border-radius: 24px;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
-
-            /* ✅ rotateX faces + GPU nudge */
             transform: rotateX(calc(var(--rsp-i) * 90deg)) translateZ(var(--rsp-z)) translateZ(0);
-
             display: flex;
             align-items: center;
             justify-content: center;
@@ -196,7 +199,17 @@ export default function RotatingSolutionPrism({
             text-decoration: none;
           }
 
-          .rsp-link:focus-visible {
+          .rsp-fallbackOne {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;     /* ✅ وسط عمودی */
+            justify-content: center; /* ✅ وسط افقی */
+            text-decoration: none;
+          }
+
+          .rsp-link:focus-visible,
+          .rsp-fallbackOne:focus-visible {
             outline: 3px solid rgba(20, 184, 166, 0.9);
             outline-offset: 4px;
           }
@@ -208,43 +221,26 @@ export default function RotatingSolutionPrism({
             filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.18));
           }
 
+          /* ✅ روی موبایل فضا رو بهتر پر کن */
+          @media (max-width: 520px) {
+            .rsp-logo {
+              max-width: 82%;
+              max-height: calc(var(--rsp-h) * 0.7);
+            }
+          }
+
+          .rsp-fade {
+            animation: rsp-fade 320ms ease-out;
+          }
+
+          @keyframes rsp-fade {
+            from { opacity: 0; transform: translateZ(0) scale(0.98); }
+            to   { opacity: 1; transform: translateZ(0) scale(1); }
+          }
+
           @keyframes rsp-spin {
-            from {
-              transform: rotateX(0deg);
-            }
-            to {
-              transform: rotateX(-360deg);
-            }
-          }
-
-          .rsp-fallback {
-            display: none;
-            position: absolute;
-            inset: 0;
-            gap: 12px;
-            background: transparent;
-          }
-
-          .rsp-fallback--show {
-            display: flex;
-          }
-
-          .rsp-fallbackItem {
-            flex: 1;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-
-          /* prefers-reduced-motion: always fallback */
-          @media (prefers-reduced-motion: reduce) {
-            .rsp-prism {
-              display: none;
-            }
-            .rsp-fallback {
-              display: flex;
-            }
+            from { transform: rotateX(0deg); }
+            to   { transform: rotateX(-360deg); }
           }
         `}</style>
       </div>
