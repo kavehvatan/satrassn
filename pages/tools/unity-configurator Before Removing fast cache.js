@@ -106,61 +106,37 @@ function oddListDown(max) {
   return out;
 }
 
+// منطق clamp SSD/HDD
+function clampTotals(source, modelId, ssd, hdd) {
+  const maxTotal = getDriveMaxByModel(modelId);
+
+  let s = Number.isFinite(ssd) ? ssd : 0;
+  let h = Number.isFinite(hdd) ? hdd : 0;
+  if (s < 0) s = 0;
+  if (h < 0) h = 0;
+
+  if (source === "ssd25") {
+    const allowed = Math.max(0, maxTotal - h);
+    if (s > allowed) s = allowed;
+  } else if (source === "hdd35") {
+    const allowed = Math.max(0, maxTotal - s);
+    if (h > allowed) h = allowed;
+  } else if (source === "model") {
+    const total = s + h;
+    if (total > maxTotal) {
+      const allowedSSD = Math.max(0, maxTotal - h);
+      if (s > allowedSSD) s = allowedSSD;
+    }
+  }
+
+  return { ssd: s, hdd: h };
+}
+
 // فقط رقم‌های لاتین 0-9 را از ورودی نگه می‌داریم
 function parseNumericInput(value) {
   const digits = (value || "").replace(/\D/g, "");
   if (!digits) return 0;
   return parseInt(digits, 10);
-}
-
-// منطق clamp برای مجموع SSDهای 2.5" (دو مدل) + HDDهای 3.5"
-function clampTotalsV2(source, modelId, ssd1, ssd2, hdd) {
-  const maxTotal = getDriveMaxByModel(modelId);
-
-  let s1 = Number.isFinite(ssd1) ? ssd1 : 0;
-  let s2 = Number.isFinite(ssd2) ? ssd2 : 0;
-  let h = Number.isFinite(hdd) ? hdd : 0;
-
-  if (s1 < 0) s1 = 0;
-  if (s2 < 0) s2 = 0;
-  if (h < 0) h = 0;
-
-  const allowedTotalSSD = Math.max(0, maxTotal - h);
-
-  // وقتی SSD1 تغییر می‌کند
-  if (source === "ssd1") {
-    const allowedForS1 = Math.max(0, allowedTotalSSD - s2);
-    if (s1 > allowedForS1) s1 = allowedForS1;
-    return { ssd1: s1, ssd2: s2, hdd: h };
-  }
-
-  // وقتی SSD2 تغییر می‌کند
-  if (source === "ssd2") {
-    const allowedForS2 = Math.max(0, allowedTotalSSD - s1);
-    if (s2 > allowedForS2) s2 = allowedForS2;
-    return { ssd1: s1, ssd2: s2, hdd: h };
-  }
-
-  // وقتی HDD تغییر می‌کند یا مدل عوض می‌شود
-  if (source === "hdd35" || source === "model") {
-    const totalSSD = s1 + s2;
-    if (totalSSD > allowedTotalSSD) {
-      let excess = totalSSD - allowedTotalSSD;
-
-      // اول از SSD2 کم می‌کنیم (اختیاری‌تره)
-      const cut2 = Math.min(excess, s2);
-      s2 -= cut2;
-      excess -= cut2;
-
-      if (excess > 0) {
-        s1 = Math.max(0, s1 - excess);
-      }
-    }
-
-    return { ssd1: s1, ssd2: s2, hdd: h };
-  }
-
-  return { ssd1: s1, ssd2: s2, hdd: h };
 }
 
 // ---------- صفحه اصلی ----------
@@ -173,68 +149,43 @@ export default function UnityConfiguratorPage() {
   const [ssd25Index, setSsd25Index] = useState(0);
   const [hdd35Index, setHdd35Index] = useState(0);
 
-  // ✅ SSD 2.5" Option 1
   const [ssd25Qty, setSsd25Qty] = useState(1);
-
-  // ✅ SSD 2.5" Option 2
-  const [ssd25Index2, setSsd25Index2] = useState(0);
-  const [ssd25Qty2, setSsd25Qty2] = useState(0);
-
   const [hdd35Qty, setHdd35Qty] = useState(1);
 
   // Fast Cache
-  const fastCacheOptions = useMemo(() => {
-    const max = getFastCacheMax(modelId);
-    // ✅ امکان 0 هم اضافه شد
-    return [...oddListDown(max), 0];
-  }, [modelId]);
-
-  // پیش‌فرض کلی Fast Cache = ۳ (ولی کاربر می‌تونه ۰ هم کنه)
+  const fastCacheOptions = useMemo(
+    () => oddListDown(getFastCacheMax(modelId)),
+    [modelId]
+  );
+  // پیش‌فرض کلی Fast Cache = ۳
   const [fastCacheQty, setFastCacheQty] = useState(3);
 
   const handleModelChange = (e) => {
     const newModelId = e.target.value;
-
-    const clamped = clampTotalsV2(
-      "model",
-      newModelId,
-      ssd25Qty,
-      ssd25Qty2,
-      hdd35Qty
-    );
-
+    const clamped = clampTotals("model", newModelId, ssd25Qty, hdd35Qty);
     setModelId(newModelId);
-    setSsd25Qty(clamped.ssd1);
-    setSsd25Qty2(clamped.ssd2);
+    setSsd25Qty(clamped.ssd);
     setHdd35Qty(clamped.hdd);
 
-    // ✅ Fast Cache را داخل بازه مدل جدید نگه می‌داریم (۰ هم معتبره)
+    // Fast Cache را داخل بازه مدل جدید نگه می‌داریم
     const maxFast = getFastCacheMax(newModelId);
     setFastCacheQty((prev) => {
-      const list = [...oddListDown(maxFast), 0];
-      if (list.includes(prev)) return prev; // ✅ 0 حفظ می‌شود
-      if (prev > maxFast) return list[0] ?? 3;
-      return list[list.length - 1] ?? 0;
+      const list = oddListDown(maxFast);
+      if (list.includes(prev)) return prev || 3;
+      if (prev && prev > maxFast) return list[0] ?? 3;
+      return list[list.length - 1] ?? 3;
     });
   };
 
   const handleSsdChange = (e) => {
     const raw = parseNumericInput(e.target.value);
-    const clamped = clampTotalsV2("ssd1", modelId, raw, ssd25Qty2, hdd35Qty);
-    setSsd25Qty(clamped.ssd1);
-  };
-
-  const handleSsd2Change = (e) => {
-    const raw = parseNumericInput(e.target.value);
-    const clamped = clampTotalsV2("ssd2", modelId, ssd25Qty, raw, hdd35Qty);
-    setSsd25Qty2(clamped.ssd2);
+    const clamped = clampTotals("ssd25", modelId, raw, hdd35Qty);
+    setSsd25Qty(clamped.ssd);
   };
 
   const handleHddChange = (e) => {
     const raw = parseNumericInput(e.target.value);
-    const clamped = clampTotalsV2("hdd35", modelId, ssd25Qty, ssd25Qty2, raw);
-    setSsd25Qty(clamped.ssd1);
-    setSsd25Qty2(clamped.ssd2);
+    const clamped = clampTotals("hdd35", modelId, ssd25Qty, raw);
     setHdd35Qty(clamped.hdd);
   };
 
@@ -243,16 +194,13 @@ export default function UnityConfiguratorPage() {
   const starterOpt =
     STARTER_PACK_OPTIONS[starterIndex] || STARTER_PACK_OPTIONS[0];
   const spioOpt = SPIO_OPTIONS[spioIndex] || SPIO_OPTIONS[0];
-
   const ssd25Opt = SSD25_OPTIONS[ssd25Index] || SSD25_OPTIONS[0];
-  const ssd25Opt2 = SSD25_OPTIONS[ssd25Index2] || SSD25_OPTIONS[0];
-
   const hdd35Opt = HDD35_OPTIONS[hdd35Index] || HDD35_OPTIONS[0];
 
   // ---------- محاسبه DAEها ----------
   // مجموع واقعی دیسک‌های ۲.۵ اینچ:
-  // 4 تا SYSPACK + Fast Cache + (SSD1 + SSD2)
-  const total25Drives = SYSPACK_DRIVES + fastCacheQty + (ssd25Qty + ssd25Qty2);
+  // 4 تا SYSPACK + Fast Cache + 2.5" data
+  const total25Drives = SYSPACK_DRIVES + fastCacheQty + ssd25Qty;
 
   // تعداد شلف‌های ۲۵تایی لازم (DPE + DAEها)
   const total25Shelves = Math.ceil(total25Drives / BASE_25_SLOTS);
@@ -289,15 +237,12 @@ export default function UnityConfiguratorPage() {
       qty: "1",
     });
 
-    // ✅ فقط اگر Fast Cache > 0 باشد در BOM بیاید
-    if (fastCacheQty > 0) {
-      rows.push({
-        module: "Fast Cache Drives",
-        option: "Unity 400GB FAST CACHE 25x2.5 SSD",
-        sku: "[400-BFXP]",
-        qty: String(fastCacheQty),
-      });
-    }
+    rows.push({
+      module: "Fast Cache Drives",
+      option: "Unity 400GB FAST CACHE 25x2.5 SSD",
+      sku: "[400-BFXP]",
+      qty: String(fastCacheQty),
+    });
 
     rows.push({
       module: "SPIO",
@@ -350,23 +295,12 @@ export default function UnityConfiguratorPage() {
       qty: String(dae25Qty),
     });
 
-    // SSD Option 1
     rows.push({
       module: 'Hard Drives (2.5")',
       option: ssd25Opt.label,
       sku: ssd25Opt.sku,
       qty: String(ssd25Qty),
     });
-
-    // SSD Option 2 (فقط اگر qty > 0)
-    if (ssd25Qty2 > 0) {
-      rows.push({
-        module: 'Hard Drives (2.5") - Option 2',
-        option: ssd25Opt2.label,
-        sku: ssd25Opt2.sku,
-        qty: String(ssd25Qty2),
-      });
-    }
 
     rows.push({
       module: "Power Cords",
@@ -439,7 +373,12 @@ export default function UnityConfiguratorPage() {
       qty: "1",
     });
 
-    // ✅ Freight Charges حذف شد
+    rows.push({
+      module: "Freight Charges",
+      option: "EMC02 Freight Charges (DDD)",
+      sku: "[990-27554]",
+      qty: "1",
+    });
 
     return rows;
   };
@@ -447,6 +386,7 @@ export default function UnityConfiguratorPage() {
   const handleExportExcel = () => {
     const rows = buildExportRows();
 
+    // هدر ستون‌ها مثل جدول صفحه
     const header = ["Module Name", "Option Name", "SKUs / Part Number", "Qty"];
     const dataRows = rows.map((r) => [
       r.module,
@@ -456,7 +396,9 @@ export default function UnityConfiguratorPage() {
     ]);
 
     const escapeCell = (value) =>
-      String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+      String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;");
 
     const html =
       '<html><head><meta charset="utf-8"></head><body><table>' +
@@ -470,7 +412,9 @@ export default function UnityConfiguratorPage() {
         .join("") +
       "</table></body></html>";
 
-    const blob = new Blob([html], { type: "application/vnd.ms-excel" });
+    const blob = new Blob([html], {
+      type: "application/vnd.ms-excel",
+    });
 
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -825,7 +769,7 @@ export default function UnityConfiguratorPage() {
                 </td>
               </tr>
 
-              {/* 2.5" Drives (Option 1) */}
+              {/* 2.5" Drives */}
               <tr>
                 <td className="border border-slate-200 px-4 py-2">
                   Hard Drives (2.5")
@@ -856,44 +800,6 @@ export default function UnityConfiguratorPage() {
                     className="mx-auto block w-16 h-8 text-center border rounded-md"
                     value={String(ssd25Qty)}
                     onChange={handleSsdChange}
-                  />
-                </td>
-              </tr>
-
-              {/* 2.5" Drives (Option 2) */}
-              <tr>
-                <td className="border border-slate-200 px-4 py-2">
-                  Hard Drives (2.5") - Option 2
-                </td>
-                <td className="border border-slate-200 px-4 py-2">
-                  <select
-                    className="w-full border border-slate-300 rounded-md px-2 py-1 text-sm"
-                    value={ssd25Index2}
-                    onChange={(e) =>
-                      setSsd25Index2(parseInt(e.target.value, 10) || 0)
-                    }
-                  >
-                    {SSD25_OPTIONS.map((o, idx) => (
-                      <option key={`${o.sku}-2`} value={idx}>
-                        {o.label}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="text-[11px] text-slate-500 mt-1">
-                    (Optional) اگر نوع دوم دیسک 2.5&quot; لازم داری، Qty رو وارد کن.
-                  </div>
-                </td>
-                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
-                  {ssd25Opt2.sku}
-                </td>
-                <td className="border border-slate-200 px-2 py-2 text-center">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    className="mx-auto block w-16 h-8 text-center border rounded-md"
-                    value={String(ssd25Qty2)}
-                    onChange={handleSsd2Change}
                   />
                 </td>
               </tr>
@@ -1138,7 +1044,28 @@ export default function UnityConfiguratorPage() {
                 </td>
               </tr>
 
-              {/* ✅ Freight Charges حذف شد */}
+              {/* Freight Charges */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Freight Charges
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  EMC02 Freight Charges (DDD)
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [990-27554]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
             </tbody>
           </table>
 
