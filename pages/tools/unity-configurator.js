@@ -170,7 +170,7 @@ export default function UnityConfiguratorPage() {
   const [starterIndex, setStarterIndex] = useState(0);
   const [spioIndex, setSpioIndex] = useState(0);
 
-  const [ssd25Index, setSsd25Index] = useState(0);
+  const [ssd25Index, setSsd25Index] = useState(2); // ✅ 3.2TB
   const [hdd35Index, setHdd35Index] = useState(0);
 
   // ✅ SSD 2.5" Option 1
