@@ -49,13 +49,13 @@ const SPIO_OPTIONS = [
 ];
 
 const SSD25_OPTIONS = [
-  { label: "D4 800GB SAS FLASH 25x2.5 SSD", sku: "[400-BFXU]" },
-  { label: "D4 1.6TB SAS FLASH 25x2.5 SSD", sku: "[400-BFXN]" },
-  { label: "D4 3.2TB SAS FLASH 25x2.5 SSD", sku: "[400-BFXQ]" },
-  { label: "Unity 7.68TB ALL FLASH 25x2.5 SSD", sku: "[400-BFXT]" },
-  { label: "Unity 600GB 10K SAS 25x2.5 DRIVE", sku: "[400-BFXS]" },
-  { label: "Unity 1.2TB 10K SAS 25x2.5 DRIVE", sku: "[400-BFXM]" },
-  { label: "Unity 1.8TB 10K SAS 25x2.5 DRIVE", sku: "[400-BFXO]" }, // ✅ index = 6
+  { label: "D4 800GB SAS FLASH 25x2.5 SSD", sku: "[400-BFXU]" }, // 0
+  { label: "D4 1.6TB SAS FLASH 25x2.5 SSD", sku: "[400-BFXN]" }, // 1
+  { label: "D4 3.2TB SAS FLASH 25x2.5 SSD", sku: "[400-BFXQ]" }, // 2
+  { label: "Unity 7.68TB ALL FLASH 25x2.5 SSD", sku: "[400-BFXT]" }, // 3
+  { label: "Unity 600GB 10K SAS 25x2.5 DRIVE", sku: "[400-BFXS]" }, // 4
+  { label: "Unity 1.2TB 10K SAS 25x2.5 DRIVE", sku: "[400-BFXM]" }, // 5
+  { label: "Unity 1.8TB 10K SAS 25x2.5 DRIVE", sku: "[400-BFXO]" }, // 6 ✅
 ];
 
 const HDD35_OPTIONS = [
@@ -182,12 +182,13 @@ export default function UnityConfiguratorPage() {
 
   const [hdd35Qty, setHdd35Qty] = useState(1);
 
-  // Fast Cache
+  // Fast Cache (✅ شامل 0)
   const fastCacheOptions = useMemo(() => {
     const max = getFastCacheMax(modelId);
     return [...oddListDown(max), 0];
   }, [modelId]);
 
+  // پیش‌فرض کلی Fast Cache = ۳ (کاربر می‌تونه ۰ هم کنه)
   const [fastCacheQty, setFastCacheQty] = useState(3);
 
   const handleModelChange = (e) => {
@@ -206,10 +207,11 @@ export default function UnityConfiguratorPage() {
     setSsd25Qty2(clamped.ssd2);
     setHdd35Qty(clamped.hdd);
 
+    // ✅ Fast Cache را داخل بازه مدل جدید نگه می‌داریم (۰ هم معتبره)
     const maxFast = getFastCacheMax(newModelId);
     setFastCacheQty((prev) => {
       const list = [...oddListDown(maxFast), 0];
-      if (list.includes(prev)) return prev;
+      if (list.includes(prev)) return prev; // ✅ 0 حفظ می‌شود
       if (prev > maxFast) return list[0] ?? 3;
       return list[list.length - 1] ?? 0;
     });
@@ -247,10 +249,19 @@ export default function UnityConfiguratorPage() {
   const hdd35Opt = HDD35_OPTIONS[hdd35Index] || HDD35_OPTIONS[0];
 
   // ---------- محاسبه DAEها ----------
+  // مجموع واقعی دیسک‌های ۲.۵ اینچ:
+  // 4 تا SYSPACK + Fast Cache + (SSD1 + SSD2)
   const total25Drives = SYSPACK_DRIVES + fastCacheQty + (ssd25Qty + ssd25Qty2);
+
+  // تعداد شلف‌های ۲۵تایی لازم (DPE + DAEها)
   const total25Shelves = Math.ceil(total25Drives / BASE_25_SLOTS);
+
+  // DAEهای ۲۵تایی:
+  //  - یک شلف DPE داریم (از total25Shelves کم می‌کنیم)
+  //  - حداقل ۱ ASLF همیشه وجود دارد
   const dae25Qty = Math.max(1, total25Shelves - 1);
 
+  // ۳.۵ اینچی مثل قبل
   const dae35Qty = Math.max(1, Math.ceil(hdd35Qty / 15));
 
   const buildExportRows = () => {
@@ -277,6 +288,7 @@ export default function UnityConfiguratorPage() {
       qty: "1",
     });
 
+    // ✅ Fast Cache فقط اگر > 0 باشد
     if (fastCacheQty > 0) {
       rows.push({
         module: "Fast Cache Drives",
@@ -344,6 +356,7 @@ export default function UnityConfiguratorPage() {
       qty: String(ssd25Qty),
     });
 
+    // ✅ Option 2 فقط اگر qty > 0 باشد
     if (ssd25Qty2 > 0) {
       rows.push({
         module: 'Hard Drives (2.5") - Option 2',
@@ -424,12 +437,15 @@ export default function UnityConfiguratorPage() {
       qty: "1",
     });
 
+    // ✅ Freight Charges حذف شد
+
     return rows;
   };
 
   const handleExportExcel = () => {
     const rows = buildExportRows();
 
+    // هدر ستون‌ها مثل جدول صفحه
     const header = ["Module Name", "Option Name", "SKUs / Part Number", "Qty"];
     const dataRows = rows.map((r) => [
       r.module,
@@ -453,7 +469,9 @@ export default function UnityConfiguratorPage() {
         .join("") +
       "</table></body></html>";
 
-    const blob = new Blob([html], { type: "application/vnd.ms-excel" });
+    const blob = new Blob([html], {
+      type: "application/vnd.ms-excel",
+    });
 
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -667,7 +685,146 @@ export default function UnityConfiguratorPage() {
                 </td>
               </tr>
 
-              {/* ... (باقی جدول دقیقاً مثل نسخه قبلی‌ات می‌مونه) ... */}
+              {/* SAS Backend Expansion */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  SAS Backend Expansion
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  UNITY 2x4 PORT SAS EXP FLD RCK
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [403-BCCW]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* Install Kits */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Install Kits
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  Unity XT HFA Field Install Kit
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [343-BBMN]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* Power Cords (block 1) */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Power Cords
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  Pair of C13/C14 cables (Highline Power) or C19/C20 cables
+                  (480/680 Lowline Power) included with DPE
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [379-BDOI]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* Hardware Support (block 1) */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Dell Services: Hardware Support
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  Parts Only Warranty 12Months-ACDTS, 12 Month(s)
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [709-BBJP]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* Deployment (block 1) */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Dell Services:Deployment Services
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  No Installation Services Selected
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [683-12965]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* DAE 25x2.5 */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Dell EMC Unity XT HFA 25x2.5&quot; DAE
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  Unity 2U 25x2.5 DAE Customer Supplied Rack (Pair of SAS Cables
+                  Included)
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [210-ASLF]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md"
+                    min={1}
+                    value={String(dae25Qty)}
+                    readOnly
+                  />
+                </td>
+              </tr>
 
               {/* 2.5" Drives (Option 1) */}
               <tr>
@@ -738,6 +895,248 @@ export default function UnityConfiguratorPage() {
                   />
                 </td>
               </tr>
+
+              {/* Power Cords (block 2) */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Power Cords
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  C13 Power Cord Pair BSI 1363 plugs 2Metr
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [450-AILC]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* TLA */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">TLA</td>
+                <td className="border border-slate-200 px-4 py-2">
+                  Non TLA Order
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [800-BBQV]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* Hardware Support (block 2) */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Dell Services: Hardware Support
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  Parts Only Warranty 12Months-ACDTS, 12 Month(s)
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [709-BBJP]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* Deployment (block 2) */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Dell Services:Deployment Services
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  No Installation Services Selected
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [683-12965]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* DAE 15x3.5 */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Dell EMC Unity XT 15x3.5 DAE
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  Unity 3U 15x3.5 DAE Customer Supplied Rack (Pair of SAS Cables
+                  Included)
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [210-ASLH]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md"
+                    min={1}
+                    value={String(dae35Qty)}
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* 3.5" Drives */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Hard Drives (3.5")
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  <select
+                    className="w-full border border-slate-300 rounded-md px-2 py-1 text-sm"
+                    value={hdd35Index}
+                    onChange={(e) =>
+                      setHdd35Index(parseInt(e.target.value, 10) || 0)
+                    }
+                  >
+                    {HDD35_OPTIONS.map((o, idx) => (
+                      <option key={o.sku} value={idx}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  {hdd35Opt.sku}
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-16 h-8 text-center border rounded-md"
+                    value={String(hdd35Qty)}
+                    onChange={handleHddChange}
+                  />
+                </td>
+              </tr>
+
+              {/* Power Cords (block 3) */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Power Cords
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  C13 Power Cord Pair BSI 1363 plugs 2Metr
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [450-AILC]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* TLA (block 3) */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">TLA</td>
+                <td className="border border-slate-200 px-4 py-2">
+                  Non TLA Order
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [800-BBQV]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* Hardware Support (block 3) */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Dell Services: Hardware Support
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  Parts Only Warranty 12Months-ACDTS, 12 Month(s)
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [709-BBJP]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* Deployment (block 3) */}
+              <tr>
+                <td className="border border-slate-200 px-4 py-2">
+                  Dell Services:Deployment Services
+                </td>
+                <td className="border border-slate-200 px-4 py-2">
+                  No Installation Services Selected
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center whitespace-nowrap">
+                  [683-12965]
+                </td>
+                <td className="border border-slate-200 px-2 py-2 text-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="mx-auto block w-14 h-8 text-center border rounded-md bg-slate-50"
+                    value="1"
+                    readOnly
+                  />
+                </td>
+              </tr>
+
+              {/* ✅ Freight Charges حذف شد */}
             </tbody>
           </table>
 
