@@ -1,32 +1,14 @@
 // pages/sitemap.xml.js
-import fs from "fs";
-import path from "path";
 
 export async function getServerSideProps({ res }) {
   const baseUrl = "https://satrass.com";
   const lastmod = new Date().toISOString();
 
-  // ---------- محصولات از روی data/products.json ----------
-  let productVendorRoutes = [];
-  try {
-    const productsPath = path.join(process.cwd(), "data", "products.json");
-    const raw = fs.readFileSync(productsPath, "utf8");
-    const products = JSON.parse(raw || "{}");
-
-    if (products && typeof products === "object") {
-      productVendorRoutes = Object.keys(products).map((vendorKey) => ({
-        path: `/products/${vendorKey}`,
-        changefreq: "weekly",
-        priority: "0.7",
-      }));
-    }
-  } catch (e) {
-    // اگر فایل نبود یا خطا داشت، فقط محصولات رو رد می‌کنیم که sitemap نخوابه
-    console.error("sitemap: failed to read products.json", e);
-  }
-
-  // ---------- صفحات ثابت سایت ----------
-  const staticRoutes = [
+  /**
+   * فقط صفحات واقعی کاربری
+   * API، admin، فایل‌های تستی / copy / بکاپ عمداً اینجا نیستند
+   */
+  const routes = [
     // صفحات اصلی
     { path: "", changefreq: "weekly", priority: "1.0" },
     { path: "/about", changefreq: "monthly", priority: "0.7" },
@@ -34,27 +16,20 @@ export async function getServerSideProps({ res }) {
     { path: "/downloads", changefreq: "weekly", priority: "0.6" },
     { path: "/warranty", changefreq: "monthly", priority: "0.6" },
 
-    // News
-    { path: "/news", changefreq: "weekly", priority: "0.5" },
-
-    // Tools hub
+    // هاب ابزارها (الان که index.js برگشته، باید باشه)
     { path: "/tools", changefreq: "weekly", priority: "0.7" },
 
-    // ابزارها (هر صفحهٔ ابزار جدا)
+    // ابزارها (فقط همین ۳ تا)
     { path: "/tools/unity-midrangesizer", changefreq: "weekly", priority: "0.9" },
     { path: "/tools/unity-configurator", changefreq: "weekly", priority: "0.8" },
     { path: "/tools/powerstore-configurator", changefreq: "weekly", priority: "0.9" },
-    // صفحهٔ جدید PowerStore NVMe calculator
-    { path: "/tools/powerstore-calculatore", changefreq: "weekly", priority: "0.9" },
-    // اگر صفحهٔ /tools/powerstore-raid-calculator هم داری، این رو فعال کن:
-    // { path: "/tools/powerstore-raid-calculator", changefreq: "weekly", priority: "0.8" },
 
-    // Solutions (طبق چیزی که تا الان داشتی – املای مسیرها رو اگر جای دیگه اصلاح کردی، اینجا هم هماهنگ کن)
+    // Solutions
     { path: "/solutions/businesscontinuty", changefreq: "monthly", priority: "0.5" },
     { path: "/solutions/sandesign", changefreq: "monthly", priority: "0.5" },
     { path: "/solutions/storage optimization", changefreq: "monthly", priority: "0.5" },
 
-    // Services (صفحهٔ اصلی، اگر بعداً /services جدا ساختی)
+    // Services (صفحهٔ اصلی)
     { path: "/services", changefreq: "weekly", priority: "0.7" },
 
     // Services (تک‌صفحه‌ها)
@@ -72,31 +47,29 @@ export async function getServerSideProps({ res }) {
     { path: "/services/training", changefreq: "monthly", priority: "0.6" },
     { path: "/services/operations", changefreq: "monthly", priority: "0.6" },
 
-    // صفحات قدیمی / دیگر
+    // بخش‌های دیگر
+    { path: "/news", changefreq: "weekly", priority: "0.5" },
     { path: "/Backup", changefreq: "monthly", priority: "0.4" },
     { path: "/brands", changefreq: "monthly", priority: "0.4" },
   ];
 
-  // ---------- جمع همهٔ مسیرها (استاتیک + محصولات) ----------
-  const allRoutes = [...staticRoutes, ...productVendorRoutes];
-
-  const urls = allRoutes
+  const urls = routes
     .map(({ path, changefreq, priority }) => {
       const loc = path === "" ? baseUrl : `${baseUrl}${path}`;
       return `
-  <url>
-    <loc>${loc}</loc>
-    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
-    <lastmod>${lastmod}</lastmod>
-  </url>`;
+      <url>
+        <loc>${loc}</loc>
+        <changefreq>${changefreq}</changefreq>
+        <priority>${priority}</priority>
+        <lastmod>${lastmod}</lastmod>
+      </url>`;
     })
     .join("");
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
-</urlset>`;
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    ${urls}
+  </urlset>`;
 
   res.setHeader("Content-Type", "text/xml");
   res.write(sitemap.trim());
