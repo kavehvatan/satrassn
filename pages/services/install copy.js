@@ -12,7 +12,7 @@ export default function Install() {
         <img
           src="/avatars/install.webp"
           alt="Install Avatar"
-          className="w-64 h-64 rounded-full shadow-md object-cover"
+          className="w-[300px] h-auto shadow-md object-cover"
         />
       </div>
     </div>
