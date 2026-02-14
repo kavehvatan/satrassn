@@ -27,7 +27,6 @@ const DRIVES = [
   { id: "nvme-7.68", label: "NVMe TLC 7.68 TB", sizeTiB: 6.9863 },
   { id: "nvme-15.36", label: "NVMe TLC 15.36 TB", sizeTiB: 13.9707 },
   { id: "nvme-15.36-qlc", label: "NVMe QLC 15.36 TB", sizeTiB: 13.9707 },
-  { id: "nvme-30.72-qlc", label: "NVMe QLC 30.72 TB", sizeTiB: 27.9414 },
 ];
 
 const TOLERANCE_LEVELS = [
