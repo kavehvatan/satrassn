@@ -11,7 +11,7 @@ export default function ConsultingDesign() {
         <img
           src="/avatars/consulting-design.webp"
           alt="Consulting & Design Avatar"
-          className="w-48 h-48 rounded-full shadow-md object-cover"
+          className="w-64 h-64 rounded-full shadow-md object-cover"
         />
       </div>
     </div>

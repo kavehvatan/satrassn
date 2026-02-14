@@ -12,7 +12,7 @@ export default function Training() {
         <img
           src="/avatars/training.webp"
           alt="Training Avatar"
-          className="w-48 h-48 rounded-full shadow-md object-cover"
+          className="w-64 h-64 rounded-full shadow-md object-cover"
         />
       </div>
     </div>

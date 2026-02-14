@@ -12,7 +12,7 @@ export default function Monitoring() {
         <img
           src="/avatars/monitoring.webp"
           alt="Monitoring Avatar"
-          className="w-48 h-48 rounded-full shadow-md object-cover"
+          className="w-64 h-64 rounded-full shadow-md object-cover"
         />
       </div>
     </div>

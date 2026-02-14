@@ -11,7 +11,7 @@ export default function VirtualizationCloud() {
           src="/avatars/services/virtualization-cloud.webp"
           onError={(e) => (e.currentTarget.style.display = 'none')}
           alt="Virtualization & Cloud"
-          className="w-48 h-48 rounded-full object-cover shadow-md"
+          className="w-64 h-64 rounded-full shadow-md object-cover"
         />
       </div>
     </div>
